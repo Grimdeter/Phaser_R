@@ -1,1 +1,1 @@
-web: node server.js && client/webpack/base.js
+web: npm run start && ./client npm run start 

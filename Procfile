@@ -1,2 +1,1 @@
-server: npm run start 
-web: server
+web: npm run start 

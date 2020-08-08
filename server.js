@@ -41,12 +41,13 @@ io.on('connection', (socket) =>
         console.log('num of players: 4')
         io.emit('NumPlayers4')
         socket.emit('isPlayerD');
-    } else 
-    {
-        spectators.push(players[4][0])
-        players[3].pop()
-        socket.emit('isSpectator');
-    }
+    } 
+    // else 
+    // {
+    //     spectators.push(players[4][0])
+    //     players[3].pop()
+    //     socket.emit('isSpectator');
+    // }
 
     socket.on('playersReady', () =>
     {

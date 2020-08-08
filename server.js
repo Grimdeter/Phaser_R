@@ -199,5 +199,6 @@ io.on('connection', (socket) =>
 
 http.listen(PORT, () =>
 {
+    console.log('listening on' + PORT)
     console.log('server started');
 })

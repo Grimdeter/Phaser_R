@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js && ./client npm run start"
+    "start": "nodemon server.js && ./client/node_modules/webpack/base.js"
   },
   "author": "Grim",
   "license": "ISC",

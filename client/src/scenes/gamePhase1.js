@@ -31,6 +31,7 @@ export default class gamePhase1 extends Phaser.Scene
 
     create()
     {
+        window.myScene = this
         let self = this;
         // player signatures
         this.isPlayerA = false

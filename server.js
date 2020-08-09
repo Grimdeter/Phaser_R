@@ -20,8 +20,12 @@ io.on('connection', (socket) =>
 
 
 
-    players[players.length - 1] = new Array();
+    players[players.length] = new Array();
+    console.log(players.length)
     players[players.length - 1].push(socket.id)
+    console.log('user is pushed into players ')
+    console.log(players.length)
+
 
     if (players.length === 1) {
         console.log('num of players: ' + players.length)

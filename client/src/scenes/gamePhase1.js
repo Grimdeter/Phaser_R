@@ -66,7 +66,7 @@ export default class gamePhase1 extends Phaser.Scene
         this.dealer = new Dealer(this)
     
         //                http://localhost:3000 if local, 5000 for local heroku
-        this.socket = io('')
+        this.socket = io('https://ancient-caverns-28613.herokuapp.com')
 
         // tells the client which player is which 
         this.socket.on('connect', () =>

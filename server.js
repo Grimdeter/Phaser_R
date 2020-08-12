@@ -9,6 +9,10 @@ let deck
 let activePlayerNum = 0;
 let tableCards = []
 
+app.get('/',function(req,res){
+    res.sendFile(__dirname+'/index.html');
+});
+
 io.on('connection', (socket) =>
 {
     console.log('user connected: ' + socket.id);

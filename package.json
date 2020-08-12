@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "server": "nodemon server.js",
-    "client": "/client/dist/index.html",
+    "client": "client/dist/index.html",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Grim",

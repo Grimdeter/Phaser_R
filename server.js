@@ -1,5 +1,6 @@
 let PORT = process.env.PORT || 3000
-const server = require('express')();
+const express = require('express')
+const server = express();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
 let Deck = require('./deckServ').Deck
@@ -9,8 +10,10 @@ let deck
 let activePlayerNum = 0;
 let tableCards = []
 
+server.use(express.static(__dirname + '/client/dist'))
+
 server.get('/',function(req,res){
-    res.sendFile(__dirname+'/client/dist/index.html');
+    res.sendFile(__dirname + '/client/dist/index.html');
 });
 
 io.on('connection', (socket) =>

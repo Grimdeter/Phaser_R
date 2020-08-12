@@ -7,7 +7,7 @@
     "start": "nodemon server.js",
     "server": "nodemon server.js",
     "client": "index.html --prefix client/dist",
-    "dev": "concurrently \"npm run server\" \"client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Grim",
   "license": "ISC",

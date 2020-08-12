@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "server": "nodemon server.js",
-    "client": "npm run build --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "client": "index.html --prefix client/dist",
+    "dev": "concurrently \"npm run server\" \"client\""
   },
   "author": "Grim",
   "license": "ISC",

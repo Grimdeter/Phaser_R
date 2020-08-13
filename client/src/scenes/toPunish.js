@@ -146,8 +146,6 @@ export default class punish extends Phaser.Scene
             cardsRender[i].render(((i*100) + 500), 800, this.playerCards[i])
         }
 
-        // this.socket = io('http://localhost:3000')
-
         this.input.on("dragend", (pointer, gameObject, dropped) =>
         {
             if(!dropped)
@@ -174,11 +172,9 @@ export default class punish extends Phaser.Scene
                     this.scene.get('gamePhase1').playerCards = this.scene.get('gamePhase1').playerCards.filter(card => card.cardValue !== cardObj.cardValue && card.cardSuit !== cardObj.cardSuit )
                 }
             }
-            // console.log(gameObject.texture.key)
             self.socket.emit('punishCard', cardObj)
             console.log('go to gamePhase1')
             this.scene.stop()
-            // 'gamePhase1', {playerCards: this.playerCards}
         })
 
         this.input.on('drag', (pointer, gameObject, dragX, dragY) =>
@@ -203,11 +199,13 @@ export default class punish extends Phaser.Scene
         {
             self.endTurnButton.setColor('#ffffff')
         })
-
     }
 
     update()
     {
-        
+        if(this.playerCards.length === 1)
+        {
+            this.scene.stop()
+        }
     }
 }

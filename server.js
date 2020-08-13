@@ -213,6 +213,13 @@ io.on('connection', (socket) =>
             {
                 tableCards.push(gameObject)
                 io.emit('cardPlayed', gameObject)
+                for (let i = 1; i <= players[activePlayerNum].length; i++) {
+                    let toCheck = `card_${players[activePlayerNum][i].cardValue}_${players[activePlayerNum][i].cardSuit}`
+                    if(toCheck === gameObject.texture.key)
+                    {
+                        players[activePlayerNum] = players[activePlayerNum].filter(card => card.cardValue !== gameObject.cardValue && card.cardSuit !== gameObject.cardSuit )
+                    }
+                }
             } else
             {
                 io.sockets.connected[players[activePlayerNum][0]].emit('punish')
@@ -230,6 +237,13 @@ io.on('connection', (socket) =>
                 {
                     tableCards.push(gameObject)
                     io.emit('cardPlayed', gameObject)
+                    for (let i = 1; i <= players[activePlayerNum].length; i++) {
+                        let toCheck = `card_${players[activePlayerNum][i].cardValue}_${players[activePlayerNum][i].cardSuit}`
+                        if(toCheck === gameObject.texture.key)
+                        {
+                            players[activePlayerNum] = players[activePlayerNum].filter(card => card.cardValue !== gameObject.cardValue && card.cardSuit !== gameObject.cardSuit )
+                        }
+                    }
                 }
             } else
             {
@@ -243,6 +257,16 @@ io.on('connection', (socket) =>
         }
     })
 
+    socket.on('takeCard', () =>
+    {
+        if (tableCards.length !== 0 ) {
+            io.sockets.connected[players[activePlayerNum][0]].emit('newCard', tableCards[0])
+            tableCards.shift()
+            io.emit('cardTaken')
+        }
+        io.sockets.connected[players[(activePlayerNum+1)%4][0]].emit('active')
+
+    })
     socket.on('disconnect', () =>
     {
         console.log('user disconnected: ' + socket.id);

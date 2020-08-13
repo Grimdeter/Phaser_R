@@ -39,6 +39,12 @@ export default class gamePhase2 extends Phaser.Scene
         let cardBackObj = new Card(this)
         cardBackObj.setCardData(0, 0)
 
+        let cardsRender = []
+        let cardsRenderOpponent1 = []
+        let cardsRenderOpponent2 = []
+        let cardsRenderOpponent3 = []
+        let cardsRenderPlayed = []
+
         this.input.on("dragend", (pointer, gameObject, dropped) =>
         {
             if(!dropped)
@@ -70,24 +76,24 @@ export default class gamePhase2 extends Phaser.Scene
         {
             this.createDropZone(this)
             // end turn button
-            this.endTurnButton = this.add.text(1150, 800, ['End Turn']).setFontSize(18).setInteractive()
+            this.take = this.add.text(1150, 800, ['Take']).setFontSize(18).setInteractive()
 
-            this.endTurnButton.on('pointerdown', () =>
+            this.take.on('pointerdown', () =>
             {
-                self.socket.emit('turnOver')
+                self.socket.emit('takeCard')
                 self.isActive = false
                 this.disableDropZones(this)
-                this.endTurnButton.disableInteractive()
+                this.take.disableInteractive()
             })
 
-            this.endTurnButton.on('pointerover', () =>
+            this.take.on('pointerover', () =>
             {
-                self.endTurnButton.setColor('#ff69b4')
+                self.take.setColor('#ff69b4')
             })
 
-            this.endTurnButton.on('pointerout', () =>
+            this.take.on('pointerout', () =>
             {
-                self.endTurnButton.setColor('#ffffff')
+                self.take.setColor('#ffffff')
             })
 
             self.isActive = true;
@@ -109,16 +115,15 @@ export default class gamePhase2 extends Phaser.Scene
             this.scene.launch('toPunish', {activePlayerNum: activePlayerNum, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, playerCards: this.playerCards, socket:this.socket})
         })
 
-        let cardsRender = []
-        let cardsRenderOpponent1 = []
-        let cardsRenderOpponent2 = []
-        let cardsRenderOpponent3 = []
 
+
+        // render player cards
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push(new Card(this))
             cardsRender[i].render(((i*100) + 500), 800, this.playerCards[i])
         }
 
+        // render opponents cards
         if (this.isPlayerA) 
         {
             // render of playersCardsC 
@@ -200,6 +205,41 @@ export default class gamePhase2 extends Phaser.Scene
             }
         }
 
+        this.socket.on('cardPlayed', (gameObject) =>
+        {
+            dropZone.data.values.cards++;
+            cardsRenderPlayed.push(new Card(this)) 
+            cardsRenderPlayed[cardsRenderPlayed.length-1].render(((dropZone.x - 40) + (dropZone.data.values.cards * 50)), dropZone.y, gameObject).disableInteractive()
+        })
+
+        this.socket.on('discard', () =>
+        {
+            for (let i = 0; i < cardsRenderPlayed.length; i++) {
+                cardsRenderPlayed[i].destroy()
+            }
+        })
+
+        this.socket.on('cardTaken', () =>
+        {
+            cardsRenderPlayed.shift()
+        })
+
+        if (this.playerCards.length === 0) {
+            if(this.podval.length === 0)
+            {
+                io.emit('win')
+            }
+            this.playerCards.push(this.podval[this.podval.length - 1])
+            this.podval.pop()
+            this.playerCards.push(this.podval[this.podval.length - 1])
+            this.podval.pop()
+             // render player cards
+            for (let i = 0; i < this.playerCards.length; i++) {
+                cardsRender.push(new Card(this))
+                cardsRender[i].render(((i*100) + 500), 800, this.playerCards[i])
+            }
+            io.emit('podval')
+        }
 
     }
 

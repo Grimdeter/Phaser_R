@@ -9,6 +9,7 @@ let spectators = []
 let deck 
 let activePlayerNum = 0;
 let tableCards = []
+let trumpSuit
 
 server.use(express.static(__dirname + '/client/dist'))
 
@@ -25,31 +26,31 @@ io.on('connection', (socket) =>
     // creates shuffled deck
     deck = new Deck()
 
-
-
     players[players.length] = new Array();
-    console.log(players.length)
     players[players.length - 1].push(socket.id)
-    console.log('user is pushed into players ')
-    console.log(players.length)
+    console.log('user is pushed into players, players.lenght: ' + players.length)
 
 
     if (players.length === 1) {
         console.log('num of players: ' + players.length)
+        console.log('players array: ' + players)
         socket.emit('isPlayerA');
     } else if (players.length === 2)
     {
-        console.log('num of players: 2')
+        console.log('num of players: ' + players.length)
+        console.log('players array: ' + players)
         socket.emit('isPlayerB');
         io.emit('NumPlayers2')
     } else if (players.length === 3)
     {
-        console.log('num of players: 3')
+        console.log('num of players: ' + players.length)
+        console.log('players array: ' + players)
         io.emit('NumPlayers3')
         socket.emit('isPlayerC');
     } else if (players.length === 4)
     {
-        console.log('num of players: 4')
+        console.log('num of players: ' + players.length)
+        console.log('players array: ' + players)
         io.emit('NumPlayers4')
         socket.emit('isPlayerD');
     } 
@@ -64,15 +65,15 @@ io.on('connection', (socket) =>
     {
         for (let i = 0 ; i < players.length; i++) {
             console.log("socket id of player: " + players[i])
-            io.sockets.connected[players[i]].emit('podvalCards', deck[deck.length - 1])
+            io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
             deck.pop()
-            io.sockets.connected[players[i]].emit('podvalCards', deck[deck.length - 1])
+            io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
             deck.pop()
         }
 
         io.emit('deckCard', deck[deck.length - 1])
 
-        io.sockets.connected[players[activePlayerNum]].emit('active')
+        io.sockets.connected[players[activePlayerNum][0]].emit('active')
     })
 
     socket.on('turnOver', () =>
@@ -89,6 +90,10 @@ io.on('connection', (socket) =>
 
     socket.on('cardDraggedInto', (x, y, gameObject) =>
     {
+        if (deck[deck.length - 1].cardSuit !== 3) 
+        {
+            trumpSuit = deck[deck.length - 1].cardSuit  
+        }
         deck.pop()
         io.emit('deckCardNumber', deck.length)
         io.emit('destroyDeckCard')
@@ -144,6 +149,7 @@ io.on('connection', (socket) =>
             players[(activePlayerNum)].push(gameObject)
             io.sockets.connected[players[activePlayerNum][0]].emit('newCard', gameObject)
         }
+
         if (deck.length === 0) {
             if (activePlayerNum !== (players.length - 1)) {
                 activePlayerNum++
@@ -152,6 +158,7 @@ io.on('connection', (socket) =>
                 activePlayerNum = 0;
             }
             io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+            console.log('players array: ' + players)
             io.sockets.connected[players[activePlayerNum][0]].emit('active')
         }
         io.emit('deckCard', deck[deck.length - 1])
@@ -199,6 +206,41 @@ io.on('connection', (socket) =>
         }
         tableCards.push(gameObject)
         io.emit('cardPlayed', gameObject, isPlayerA)
+
+        if (gameOjbect.cardSuit !== tableCards[tableCards.length - 1].cardSuit) 
+        {
+            if (gameObject.cardValue > tableCards[tableCards.length - 1].cardValue) 
+            {
+                tableCards.push(gameObject)
+                io.emit('cardPlayed', gameObject)
+            } else
+            {
+                io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+                socket.broadcast.emit(`toPunish`, activePlayerNum);
+            }
+        } else
+        {
+            if (gameObject.cardSuit === trumpSuit)
+            {
+                if (gameObject.cardSuit === 3) 
+                {
+                    io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+                    socket.broadcast.emit(`toPunish`, activePlayerNum);
+                } else
+                {
+                    tableCards.push(gameObject)
+                    io.emit('cardPlayed', gameObject)
+                }
+            } else
+            {
+                io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+                socket.broadcast.emit(`toPunish`, activePlayerNum);
+            }
+        }
+        if (tableCards.length === players.length) {
+            tableCards.clear()
+            io.emit('discard')
+        }
     })
 
     socket.on('disconnect', () =>

@@ -17,7 +17,7 @@ export default class Card
         this.render = (x, y, gameObject) =>
         {
             // console.log(gameObject)
-            let card = scene.add.image(x, y, `card_${gameObject.cardValue}_${gameObject.cardSuit}`).setScale(0.2, 0.2).setInteractive()
+            let card = scene.add.image(x, y, `card_${gameObject.cardValue}_${gameObject.cardSuit}`).setScale(0.1, 0.1).setInteractive()
             scene.input.setDraggable(card)
             return card;
         }

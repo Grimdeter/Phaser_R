@@ -21,6 +21,7 @@ export default class punish extends Phaser.Scene
 
     create()
     {
+        console.log('entering punish scene: ')
         let counter = 0
 
         this.scene.get('gamePhase1').disableDropZones(this.scene.get('gamePhase1'))

@@ -31,7 +31,7 @@ export default class gamePhase1 extends Phaser.Scene
 
     create()
     {
-        window.myScene = this
+        window.myScene1 = this
         let self = this;
         // player signatures
         this.isPlayerA = false
@@ -66,7 +66,8 @@ export default class gamePhase1 extends Phaser.Scene
         this.dealer = new Dealer(this)
     
         //                http://localhost:3000 if local, 5000 for local heroku
-        this.socket = io.connect()
+        this.socket = io('http://localhost:3000')
+        // this.socket = io.connect() this was working on the deploy
         // this.socket = io.connect(window.location.hostname)
 
         // tells the client which player is which 
@@ -325,7 +326,7 @@ export default class gamePhase1 extends Phaser.Scene
 
         this.socket.on('nextPhase', (numOfCardsA, numOfCardsB, numOfCardsC, numOfCardsD) =>
         {
-            this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+            self.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
         })
 
     }

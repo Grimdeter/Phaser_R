@@ -34,6 +34,8 @@ export default class punish extends Phaser.Scene
     {
         let self = this;
         // player signatures
+        console.log('entering toPunish scene: ')
+        
 
         console.log('active player num: ' + this.activePlayerNum)
         console.log('isPlayerA: ' + this.isPlayerA)
@@ -143,7 +145,7 @@ export default class punish extends Phaser.Scene
 
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push(new Card(this))
-            cardsRender[i].render(((i*100) + 500), 800, this.playerCards[i])
+            cardsRender[i].render(((i*100) + 600), 800, this.playerCards[i])
         }
 
         this.input.on("dragend", (pointer, gameObject, dropped) =>

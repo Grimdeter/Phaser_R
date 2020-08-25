@@ -35,6 +35,16 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: "./index.html"
-    })
+    }),
+    // new webpack.LoaderOptionsPlugin({
+    //   // test: /\.xxx$/, // may apply this only for some modules
+    //   options: {
+    //     devServer:
+    //     {
+    //       host: '0.0.0.0',
+    //       port: 3000
+    //     }
+    //   }
+    // })
   ]
 };

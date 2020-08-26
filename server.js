@@ -287,10 +287,12 @@ io.on('connection', (socket) =>
     tableCards.push(gameObject)
     io.emit('cardPlayedServ', gameObject, activePlayerNum)
     for (let i = 1; i <= players[activePlayerNum].length; i++) {
-        if (gameObject === players[activePlayerNum][i]) {
+        if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
+            console.log('if statement is true at line 291')
             players[activePlayerNum] = players[activePlayerNum].splice(i, 1)
         }
     }
+    oldActivePlayer = activePlayerNum
     activePlayerNum = (activePlayerNum+1)%players.length
     setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
     if (tableCards.length === players.length) {
@@ -321,6 +323,7 @@ io.on('connection', (socket) =>
         players[playerNum].push(cards[0])
         players[playerNum].push(cards[1])
         trumpSuit = newTrumpSuit
+        io.emit('podvalTaken', playerNum)
         outputState()
     })
 

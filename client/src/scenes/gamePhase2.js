@@ -263,10 +263,10 @@ export default class gamePhase2 extends Phaser.Scene
             }
         })
 
+        let newTrumpSuit
         //discard, win, podval, selection on new trumpSuit
         this.socket.on('discard', () =>
         {
-            let newTrumpSuit
             for (let i = 0; i < cardsRenderPlayed.length; i++) {
                 cardsRenderPlayed[i].destroy()
             }
@@ -481,6 +481,33 @@ export default class gamePhase2 extends Phaser.Scene
             // render player cards
             for (let i = 0; i < this.playerCards.length; i++) {
                 cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+            }
+        })
+        
+        this.socket.on('podvalTaken', (playerNum) =>
+        {
+            if(activePlayerNum !== this.playerNum)
+            {
+                let diff = this.playerNum - activePlayerNum
+                if (diff === 1 || diff === -3) 
+                {
+                    cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
+                    cardsRenderOpponent1[cardsRenderOpponent1.length-1].angle = 90
+                    cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
+                    cardsRenderOpponent1[cardsRenderOpponent1.length-1].angle = 90
+                }
+                if (diff === 2 || diff === -2) 
+                {
+                    cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
+                    cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
+                }
+                if (diff === 3 || diff === -1) 
+                {
+                    cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
+                    cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
+                    cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
+                    cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
+                }
             }
         })
     }

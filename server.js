@@ -8,6 +8,8 @@ let players = []
 let spectators = []
 let deck 
 let activePlayerNum = 0;
+let oldActivePlayerNum
+let timeout
 let tableCards = []
 let trumpSuit
 
@@ -160,8 +162,8 @@ io.on('connection', (socket) =>
         if (deck.length === 0) {
             activePlayerNum = (activePlayerNum+1)%4
             io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+            outputPlayersArray(players)
             console.log('players array: ' + players)
-            console.log('activePlayerNum: ' + activePlayerNum)
             io.sockets.connected[players[activePlayerNum][0]].emit('active')
             console.log('trump suit: ' + trumpSuit)
             setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
@@ -196,13 +198,6 @@ io.on('connection', (socket) =>
         io.emit('topCardD', card)
     })
 
-    socket.on('dealCards', () =>
-    {
-        io.emit('dealCards')
-    })
-
-    let oldActivePlayer
-    let timeout
     //commented out the hopefully working version
 {
     // socket.on('cardPlayed', (gameObject) =>
@@ -281,23 +276,22 @@ io.on('connection', (socket) =>
     // })
 }
     socket.on('cardPlayed', (gameObject) =>
-{
-    
+    {
     
     tableCards.push(gameObject)
     io.emit('cardPlayedServ', gameObject, activePlayerNum)
-    for (let i = 1; i <= players[activePlayerNum].length; i++) {
+    for (let i = 1; i < players[activePlayerNum].length; i++) {
         if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-            console.log('if statement is true at line 291')
-            players[activePlayerNum] = players[activePlayerNum].splice(i, 1)
+            console.log('if statement is true at line 286')
+            players[activePlayerNum].splice(i, 1)
         }
     }
-    oldActivePlayer = activePlayerNum
+    oldActivePlayerNum = activePlayerNum
     activePlayerNum = (activePlayerNum+1)%players.length
-    setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
+    setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
     if (tableCards.length === players.length) {
         clearTimeout(timeout)
-        activePlayerNum = oldActivePlayer
+        activePlayerNum = oldActivePlayerNum
         io.sockets.connected[players[activePlayerNum][0]].emit('active')
         tableCards.splice(0,tableCards.length)
         io.emit('discard')
@@ -323,10 +317,17 @@ io.on('connection', (socket) =>
         players[playerNum].push(cards[0])
         players[playerNum].push(cards[1])
         trumpSuit = newTrumpSuit
+        console.log(`emitting podvalTaken of ${playerNum}`)
         io.emit('podvalTaken', playerNum)
         outputState()
     })
 
+    socket.on('win', (playerNum) =>
+    {
+        players = players.filter(players => players[0] !== socket.id)
+        console.log("num of players: " + players.length)
+
+    })
     socket.on('disconnect', () =>
     {
         console.log('user disconnected: ' + socket.id);
@@ -338,12 +339,25 @@ io.on('connection', (socket) =>
 function outputState()
 {
     console.log(`active player num: ${activePlayerNum}`)
+    console.log(`old active player num: ${oldActivePlayerNum}`)
     console.log(`number of players : ${players.length}`)
     console.log(`trump suit: ${trumpSuit}`)
     console.log(`number of cards in hand of player1: ${players[0].length-1}`)
     console.log(`number of cards in hand of player2: ${players[1].length-1}`)
     console.log(`number of cards in hand of player3: ${players[2].length-1}`)
     console.log(`number of cards in hand of player4: ${players[3].length-1}`)
+}
+
+function outputPlayersArray(players)
+{
+    for(var i = 0; i < players.length; i++) {
+        var player = players[i];
+        console.log(`socket id of player: ${player[0]}`);
+        for(let card in player)
+        {
+            console.log(`card Suit: ${player[card].cardSuit} card Value: ${player[card].cardValue}`);
+        }
+    }
 }
 
 http.listen(PORT, () =>

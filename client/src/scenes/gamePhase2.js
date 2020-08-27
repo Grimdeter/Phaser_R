@@ -274,16 +274,18 @@ export default class gamePhase2 extends Phaser.Scene
             cardsTableObj.splice(0, cardsTableObj.length)
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
-                    this.socket.emit('win')
-                }
-                this.playerCards = this.podval
-                
-                // render player cards
-                for (let i = 0; i < this.playerCards.length; i++) {
-                    cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
-                }
-                //creating the button to chose new trump suit (1)
+                    this.socket.emit('win', this.playerNum)
+                    this.add.text(500, 500, ['WIN!']).setFontSize(30)
+                } else 
                 {
+                    this.playerCards = this.podval
+                    
+                    // render player cards
+                    for (let i = 0; i < this.playerCards.length; i++) {
+                        cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+                    }
+                    //creating the button to chose new trump suit (1)
+                    {
                     this.suit1 = this.add.text(500, 400, ['Черви']).setFontSize(18).setInteractive()
 
                     this.suit1.on('pointerdown', () =>
@@ -304,10 +306,10 @@ export default class gamePhase2 extends Phaser.Scene
                     {
                         self.suit1.setColor('#ffffff')
                     })
-                }
-                
-                //creating the button to chose new trump suit (2)
-                {
+                    }
+
+                    //creating the button to chose new trump suit (2)
+                    {
                     this.suit2 = this.add.text(500, 500, ['Крести']).setFontSize(18).setInteractive()
 
                     this.suit2.on('pointerdown', () =>
@@ -328,10 +330,10 @@ export default class gamePhase2 extends Phaser.Scene
                     {
                         self.suit2.setColor('#ffffff')
                     })
-                }
+                    }
 
-                //creating the button to chose new trump suit (4)
-                {
+                    //creating the button to chose new trump suit (4)
+                    {
                     this.suit4 = this.add.text(500, 600, ['Буби']).setFontSize(18).setInteractive()
 
                     this.suit4.on('pointerdown', () =>
@@ -352,6 +354,7 @@ export default class gamePhase2 extends Phaser.Scene
                     {
                         self.suit4.setColor('#ffffff')
                     })
+                    }
                 }
             }
         })
@@ -391,16 +394,17 @@ export default class gamePhase2 extends Phaser.Scene
             }
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
-                    this.socket.emit('win')
-                }
-                this.playerCards = this.podval
-                
-                // render player cards
-                for (let i = 0; i < this.playerCards.length; i++) {
-                    cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
-                }
-                //creating the button to chose new trump suit (1)
+                    this.socket.emit('win', this.playerNum)
+                } else 
                 {
+                    this.playerCards = this.podval
+                    
+                    // render player cards
+                    for (let i = 0; i < this.playerCards.length; i++) {
+                        cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+                    }
+                    //creating the button to chose new trump suit (1)
+                    {
                     this.suit1 = this.add.text(500, 400, ['Черви']).setFontSize(18).setInteractive()
 
                     this.suit1.on('pointerdown', () =>
@@ -421,10 +425,10 @@ export default class gamePhase2 extends Phaser.Scene
                     {
                         self.suit1.setColor('#ffffff')
                     })
-                }
-                
-                //creating the button to chose new trump suit (2)
-                {
+                    }
+
+                    //creating the button to chose new trump suit (2)
+                    {
                     this.suit2 = this.add.text(500, 500, ['Крести']).setFontSize(18).setInteractive()
 
                     this.suit2.on('pointerdown', () =>
@@ -445,10 +449,10 @@ export default class gamePhase2 extends Phaser.Scene
                     {
                         self.suit2.setColor('#ffffff')
                     })
-                }
+                    }
 
-                //creating the button to chose new trump suit (4)
-                {
+                    //creating the button to chose new trump suit (4)
+                    {
                     this.suit4 = this.add.text(500, 600, ['Буби']).setFontSize(18).setInteractive()
 
                     this.suit4.on('pointerdown', () =>
@@ -469,6 +473,7 @@ export default class gamePhase2 extends Phaser.Scene
                     {
                         self.suit4.setColor('#ffffff')
                     })
+                    }
                 }
             }
         })
@@ -486,9 +491,10 @@ export default class gamePhase2 extends Phaser.Scene
         
         this.socket.on('podvalTaken', (playerNum) =>
         {
-            if(activePlayerNum !== this.playerNum)
+            console.log('entered podvalTaken')
+            if(playerNum !== this.playerNum)
             {
-                let diff = this.playerNum - activePlayerNum
+                let diff = this.playerNum - playerNum
                 if (diff === 1 || diff === -3) 
                 {
                     cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())

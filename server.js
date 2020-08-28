@@ -277,26 +277,24 @@ io.on('connection', (socket) =>
 }
     socket.on('cardPlayed', (gameObject) =>
     {
-    
-    tableCards.push(gameObject)
-    io.emit('cardPlayedServ', gameObject, activePlayerNum)
-    for (let i = 1; i < players[activePlayerNum].length; i++) {
-        if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-            console.log('if statement is true at line 286')
-            players[activePlayerNum].splice(i, 1)
+        tableCards.push(gameObject)
+        io.emit('cardPlayedServ', gameObject, activePlayerNum)
+        for (let i = 1; i < players[activePlayerNum].length; i++) {
+            if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
+                players[activePlayerNum].splice(i, 1)
+            }
         }
-    }
-    oldActivePlayerNum = activePlayerNum
-    activePlayerNum = (activePlayerNum+1)%players.length
-    setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
-    if (tableCards.length === players.length) {
-        clearTimeout(timeout)
-        activePlayerNum = oldActivePlayerNum
-        io.sockets.connected[players[activePlayerNum][0]].emit('active')
-        tableCards.splice(0,tableCards.length)
-        io.emit('discard')
-    }
-    outputState()
+        oldActivePlayerNum = activePlayerNum
+        activePlayerNum = (activePlayerNum+1)%players.length
+        setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+        if (tableCards.length === players.length) {
+            clearTimeout(timeout)
+            activePlayerNum = oldActivePlayerNum
+            io.sockets.connected[players[activePlayerNum][0]].emit('active')
+            tableCards.splice(0,tableCards.length)
+            io.emit('discard')
+        }
+        outputState()
     })
     
     socket.on('takeCard', () =>
@@ -324,10 +322,10 @@ io.on('connection', (socket) =>
 
     socket.on('win', (playerNum) =>
     {
-        players = players.filter(players => players[0] !== socket.id)
+        players.splice(playerNum,1)
         console.log("num of players: " + players.length)
-
     })
+    
     socket.on('disconnect', () =>
     {
         console.log('user disconnected: ' + socket.id);
@@ -342,10 +340,10 @@ function outputState()
     console.log(`old active player num: ${oldActivePlayerNum}`)
     console.log(`number of players : ${players.length}`)
     console.log(`trump suit: ${trumpSuit}`)
-    console.log(`number of cards in hand of player1: ${players[0].length-1}`)
-    console.log(`number of cards in hand of player2: ${players[1].length-1}`)
-    console.log(`number of cards in hand of player3: ${players[2].length-1}`)
-    console.log(`number of cards in hand of player4: ${players[3].length-1}`)
+    for (let i = 0; i < players.length; i++) {
+        console.log(`number of cards in hand of player${i}: ${players[i].length-1}`)
+    }
+    console.log('***********************************')
 }
 
 function outputPlayersArray(players)

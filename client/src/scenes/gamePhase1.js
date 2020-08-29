@@ -14,8 +14,14 @@ export default class gamePhase1 extends Phaser.Scene
 
     init(data)
     {
-        this.playerCards = data.playerCards || []
-        console.log('start phase1')
+        this.sceneNum = data.sceneNum
+        this.playerCards = data.playerCards
+        this.socket = data.socket
+        this.podval = data.podval
+        this.isPlayerA = data.isPlayerA
+        this.isPlayerB = data.isPlayerB
+        this.isPlayerC = data.isPlayerC
+        this.isPlayerD = data.isPlayerD
     }
 
     preload()
@@ -51,19 +57,6 @@ export default class gamePhase1 extends Phaser.Scene
         this.podval = []
 
         this.isActive = false;
-
-        
-
-
-        // this.socket.on('numPlayers2', () =>
-        // {
-        //     this.zone2 = new Zone(self)
-        //     this.opponent1Zone = this.zone2.renderZone()
-        //     this.opponent1ZoneOutline = this.zone2.renderOutline()
-        // })
-
-        // creates a new dealer of cards
-        this.dealer = new Dealer(this)
     
         //                http://localhost:3000 if local, 5000 for local heroku
         this.socket = io('http://localhost:3000')
@@ -149,14 +142,6 @@ export default class gamePhase1 extends Phaser.Scene
         this.socket.on('podvalCards', (card) =>
         {
             this.podval.push(card)
-            console.log(this.podval)
-        })
-
-        this.socket.on('dealCards', () =>
-        {
-
-            // self.dealer.dealCards()
-            // self.dealText.disableInteractive()
         })
 
         this.socket.on('deckCardNumber', (number) =>
@@ -173,17 +158,6 @@ export default class gamePhase1 extends Phaser.Scene
             graphics.closePath();
             graphics.fillPath();
             this.deckCardNumber = this.add.text(50, 50, ['Cards left in deck: ' + number]).setFontSize(18).setInteractive();
-        })
-
-        this.socket.on('cardPlayed', (gameObject, isPlayerA) =>
-        {
-            // if (isPlayerA !== self.isPlayerA) {
-            //     let sprite = gameObject.textureKey;
-            //     self.opponentCards.shift().destroy()
-            //     self.dropZone.data.values.cards++
-            //     let card = new Card(self)
-            //     card.render(((self.dropZone.x - 350)+ (self.dropZone.data.values.cards * 50)), (self.dropZone.y), sprite).disableInteractive()
-            // }
         })
 
         let deckCardC = new Card(this)
@@ -316,12 +290,12 @@ export default class gamePhase1 extends Phaser.Scene
 
         this.socket.on('punish', ()=>
         {
-            this.scene.launch('punish', {socket:this.socket, playerCards:this.playerCards})
+            this.scene.start('punish', {sceneNum: 1, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
         this.socket.on('toPunish', (activePlayerNum) =>
         {
-            this.scene.launch('toPunish', {activePlayerNum: activePlayerNum, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, playerCards: this.playerCards, socket:this.socket})
+            this.scene.start('toPunish', {sceneNum: 1, activePlayerNum: activePlayerNum, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
         this.socket.on('nextPhase', (numOfCardsA, numOfCardsB, numOfCardsC, numOfCardsD) =>

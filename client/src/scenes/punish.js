@@ -10,8 +10,14 @@ export default class punish extends Phaser.Scene
 
     init(data)
     {
-        this.socket = data.socket
+        this.sceneNum = data.sceneNum
         this.playerCards = data.playerCards
+        this.socket = data.socket
+        this.podval = data.podval
+        this.isPlayerA = data.isPlayerA
+        this.isPlayerB = data.isPlayerB
+        this.isPlayerC = data.isPlayerC
+        this.isPlayerD = data.isPlayerD
     }
 
     preload()
@@ -31,9 +37,17 @@ export default class punish extends Phaser.Scene
             this.scene.get('gamePhase1').playerCards.push(cardObj)
             counter++
             if (counter === 3) {
-                console.log('start Phase1')
-                this.socket.emit('turnOver')
-                this.scene.stop()
+                if(this.sceneNum === 1)
+                {
+                    console.log('start Phase1')
+                    this.socket.emit('turnOver')
+                    this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
+                } else
+                {
+                    console.log('start Phase2')
+                    this.socket.emit('turnOver')
+                    this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
+                }
             }
         })
     }

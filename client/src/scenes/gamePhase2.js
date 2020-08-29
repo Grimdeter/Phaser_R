@@ -1,6 +1,5 @@
 import Card from '../helpers/card.js';
 import Zone from '../helpers/zone';
-import Dealer from '../helpers/dealer';
 import io from 'socket.io-client';
 
 export default class gamePhase2 extends Phaser.Scene
@@ -148,8 +147,16 @@ export default class gamePhase2 extends Phaser.Scene
             this.scene.start('toPunish', {sceneNum: 2, activePlayerNum: activePlayerNum, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
+        if (cardsRender.length !== 0) {
+            for (let i = 0; i < this.playerCards.length; i++) {
+                cardsRender[i].destroy
+            }    
+        }
         // render player cards
-        this.renderPlayerCards(cardsRender)
+        for (let i = 0; i < this.playerCards.length; i++) {
+            cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+        }
+
         
 
         // render opponents cards anc change this.playerNum
@@ -233,9 +240,9 @@ export default class gamePhase2 extends Phaser.Scene
             {
                 let diff = this.playerNum - activePlayerNum
                 console.log('diff: ' + diff)
-                if (diff === 1 || diff === -3) 
+                if (diff === 3 || diff === -1) 
                 {
-                    let toDestroy = cardsRenderOpponent3.pop()
+                    let toDestroy = cardsRenderOpponent1.pop()
                     toDestroy.destroy()
                 }
                 if (diff === 2 || diff === -2) 
@@ -243,9 +250,9 @@ export default class gamePhase2 extends Phaser.Scene
                     let toDestroy = cardsRenderOpponent2.pop()
                     toDestroy.destroy()
                 }
-                if (diff === 3 || diff === -1) 
+                if (diff === 1 || diff === -3) 
                 {
-                    let toDestroy = cardsRenderOpponent1.pop()
+                    let toDestroy = cardsRenderOpponent3.pop()
                     toDestroy.destroy()
                 }
             }
@@ -365,7 +372,7 @@ export default class gamePhase2 extends Phaser.Scene
             if(activePlayerNum !== this.playerNum)
             {
                 let diff = this.playerNum - activePlayerNum
-                if (diff === 1 || diff === -3) 
+                if (diff === 3 || diff === -1) 
                 {
                     cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
                     cardsRenderOpponent1[cardsRenderOpponent1.length-1].angle = 90
@@ -374,7 +381,7 @@ export default class gamePhase2 extends Phaser.Scene
                 {
                     cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
                 }
-                if (diff === 3 || diff === -1) 
+                if (diff === 1 || diff === -3) 
                 {
                     cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
                     cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
@@ -471,6 +478,11 @@ export default class gamePhase2 extends Phaser.Scene
             console.log('playerCards.lenght: ' + this.playerCards.length)
             // this.playerCards.push(gameObject)
             console.log('playerCards: ' + this.playerCards)
+
+            for (let i = 0; i < this.playerCards.length; i++) {
+                cardsRender[i].destroy()
+            }
+
             // render player cards
             for (let i = 0; i < this.playerCards.length; i++) {
                 cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
@@ -501,7 +513,7 @@ export default class gamePhase2 extends Phaser.Scene
                 {
                     cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
                     cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
-                    cardsRenderOpponent3.push((new Card(this)).render(1500, 200, cardBackObj).disableInteractive())
+                    cardsRenderOpponent3.push((new Card(this)).render(1150, 200, cardBackObj).disableInteractive())
                     cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
                     console.log(`number of cards of the opponent3(right) ${cardsRenderOpponent3.length}`)
                 }
@@ -524,12 +536,12 @@ export default class gamePhase2 extends Phaser.Scene
     //     scene.zoneCenter.renderOutline(scene.dropZoneTop, 0x000000)
     // }
 
-    renderPlayerCards(cardsRender)
-    {
-        for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
-        }
-    }
+    // renderPlayerCards(cardsRender)
+    // {
+    //     for (let i = 0; i < this.playerCards.length; i++) {
+    //         cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+    //     }
+    // }
 
     update()
     {

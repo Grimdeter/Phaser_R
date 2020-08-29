@@ -1,9 +1,5 @@
 import Card from '../helpers/card.js';
 import Zone from '../helpers/zone';
-import Dealer from '../helpers/dealer';
-import Deck from '../helpers/deck.js';
-import io from 'socket.io-client';
-import gamePhase1 from './gamePhase1.js';
 
 export default class punish extends Phaser.Scene
 {
@@ -56,14 +52,14 @@ export default class punish extends Phaser.Scene
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneTop = this.zoneTop.renderZone(700, 100, 200, 250)
+                this.dropZoneTop = this.zoneTop.renderZone(700, 200, 200, 250)
                 this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
             }
             if (this.isPlayerD === true) {
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneLeft = this.zoneLeft.renderZone(150, 425, 200, 250)
+                this.dropZoneLeft = this.zoneLeft.renderZone(350, 425, 200, 250)
                 this.outlineLeft = this.zoneLeft.renderOutline(this.dropZoneLeft)
             }
         }
@@ -73,7 +69,7 @@ export default class punish extends Phaser.Scene
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneLeft = this.zoneLeft.renderZone(150, 425, 200, 250)
+                this.dropZoneLeft = this.zoneLeft.renderZone(350, 425, 200, 250)
                 this.outlineLeft = this.zoneLeft.renderOutline(this.dropZoneLeft)
             }
             if (this.isPlayerC === true) {
@@ -87,7 +83,7 @@ export default class punish extends Phaser.Scene
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneTop = this.zoneTop.renderZone(700, 100, 200, 250)
+                this.dropZoneTop = this.zoneTop.renderZone(700, 200, 200, 250)
                 this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
             }
         }
@@ -97,7 +93,7 @@ export default class punish extends Phaser.Scene
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneTop = this.zoneTop.renderZone(700, 100, 200, 250)
+                this.dropZoneTop = this.zoneTop.renderZone(700, 200, 200, 250)
                 this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
                 
             }
@@ -105,7 +101,7 @@ export default class punish extends Phaser.Scene
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneLeft = this.zoneLeft.renderZone(150, 425, 200, 250)
+                this.dropZoneLeft = this.zoneLeft.renderZone(350, 425, 200, 250)
                 this.outlineLeft = this.zoneLeft.renderOutline(this.dropZoneLeft)
                 
             }
@@ -130,14 +126,14 @@ export default class punish extends Phaser.Scene
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneTop = this.zoneTop.renderZone(700, 100, 200, 250)
+                this.dropZoneTop = this.zoneTop.renderZone(700, 200, 200, 250)
                 this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
             }
             if (this.isPlayerC === true) {
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
-                this.dropZoneLeft = this.zoneLeft.renderZone(150, 425, 200, 250)
+                this.dropZoneLeft = this.zoneLeft.renderZone(350, 425, 200, 250)
                 this.outlineLeft = this.zoneLeft.renderOutline(this.dropZoneLeft)
             }
         }
@@ -161,12 +157,9 @@ export default class punish extends Phaser.Scene
             }
         })
 
-        this.input.on("drop", (pointer, gameObject, dropZone) =>
+        this.input.on("drop", (pointer, gameObject) =>
         {
-            dropZone.data.values.cards++;
-            gameObject.x = (dropZone.x - 40) + (dropZone.data.values.cards * 50)
-            gameObject.y = dropZone.y
-            gameObject.disableInteractive()
+            gameObject.destroy()
             let cardObj
             for (let i = 0; i < this.playerCards.length; i++) {
                 let toCheck = `card_${this.playerCards[i].cardValue}_${this.playerCards[i].cardSuit}`

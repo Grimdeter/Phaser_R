@@ -30,11 +30,10 @@ export default class punish extends Phaser.Scene
         console.log('entering punish scene: ')
         let counter = 0
 
-        this.scene.get('gamePhase1').disableDropZones(this.scene.get('gamePhase1'))
 
         this.socket.on('newCard', (cardObj) =>
         {
-            this.scene.get('gamePhase1').playerCards.push(cardObj)
+            this.playerCards.push(cardObj)
             counter++
             if (counter === 3) {
                 if(this.sceneNum === 1)

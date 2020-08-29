@@ -12,6 +12,7 @@ export default class punish extends Phaser.Scene
 
     init(data)
     {
+        this.activePlayerNum = data.activePlayerNum
         this.sceneNum = data.sceneNum
         this.playerCards = data.playerCards
         this.socket = data.socket
@@ -142,8 +143,7 @@ export default class punish extends Phaser.Scene
 
         if (this.sceneNum === 1) {
             for (let i = 0; i < this.playerCards.length; i++) {
-                cardsRender.push(new Card(this))
-                cardsRender[i].render(((i*100) + 600), 800, this.playerCards[i])
+                cardsRender.push((new Card(this)).render(((i*100) + 600), 800, this.playerCards[i]))
             }
         }
         

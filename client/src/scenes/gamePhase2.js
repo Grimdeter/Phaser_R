@@ -25,17 +25,6 @@ export default class gamePhase2 extends Phaser.Scene
         this.numOfCardsB = data.numOfCardsB
         this.numOfCardsC = data.numOfCardsC
         this.numOfCardsD = data.numOfCardsD
-        // console.log('this.playerCards: ' + this.playerCards)
-        // console.log('this.socket: ' + this.socket)
-        // console.log('this.podval: ' + this.podval)
-        // console.log('this.isPlayerA: ' + this.isPlayerA)
-        // console.log('this.isPlayerB: ' + this.isPlayerB)
-        // console.log('this.isPlayerC: ' + this.isPlayerC)
-        // console.log('this.isPlayerD: ' + this.isPlayerD)
-        // console.log('this.numOfCardsA: ' + this.numOfCardsA)
-        // console.log('this.numOfCardsB: ' + this.numOfCardsB)
-        // console.log('this.numOfCardsC: ' + this.numOfCardsC)
-        // console.log('this.numOfCardsD: ' + this.numOfCardsD)
     }
 
     preload()
@@ -151,16 +140,16 @@ export default class gamePhase2 extends Phaser.Scene
 
         this.socket.on('punish', ()=>
         {
-            this.scene.launch('punish', {socket:this.socket, playerCards:this.playerCards})
+            this.scene.start('punish', {sceneNum: 2, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
         this.socket.on('toPunish', (activePlayerNum) =>
         {
-            this.scene.launch('toPunish', {activePlayerNum: activePlayerNum, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, playerCards: this.playerCards, socket:this.socket})
+            this.scene.start('toPunish', {sceneNum: 2, activePlayerNum: activePlayerNum, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
         // render player cards
-        renderPlayerCards(cardsRender)
+        this.renderPlayerCards(cardsRender)
         
 
         // render opponents cards anc change this.playerNum

@@ -12,6 +12,7 @@ let oldActivePlayerNum
 let timeout
 let tableCards = []
 let trumpSuit
+let toPunishCounter
 
 // server.use(express.static(__dirname + '/client/dist'))
 
@@ -325,6 +326,19 @@ io.on('connection', (socket) =>
     {
         players.splice(playerNum,1)
         console.log("num of players: " + players.length)
+    })
+
+    socket.on('changeSceneForToPunish', () =>
+    {
+        toPunishCounter++
+        if (toPunishCounter === players.length-1) {
+            io.emit('changeSceneForToPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+        }
+    })
+
+    socket.on('changeOfSceneForPunish', () =>
+    {
+        io.emit('changeOfSceneForPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
     })
     
     socket.on('disconnect', () =>

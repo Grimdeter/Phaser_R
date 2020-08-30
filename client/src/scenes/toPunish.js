@@ -141,10 +141,8 @@ export default class punish extends Phaser.Scene
 
         let cardsRender = []
 
-        if (this.sceneNum === 1) {
-            for (let i = 0; i < this.playerCards.length; i++) {
-                cardsRender.push((new Card(this)).render(((i*100) + 600), 800, this.playerCards[i]))
-            }
+        for (let i = 0; i < this.playerCards.length; i++) {
+            cardsRender.push((new Card(this)).render(((i*100) + 600), 800, this.playerCards[i]))
         }
         
 
@@ -171,15 +169,7 @@ export default class punish extends Phaser.Scene
                 }
             }
             self.socket.emit('punishCard', cardObj)
-            if(this.sceneNum === 1)
-            {
-                console.log('start Phase1')
-                this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
-            } else
-            {
-                console.log('start Phase2')
-                this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
-            }
+            this.socket.emit('changeSceneForToPunish')
         })
 
         this.input.on('drag', (pointer, gameObject, dragX, dragY) =>
@@ -192,6 +182,7 @@ export default class punish extends Phaser.Scene
 
         this.endTurnButton.on('pointerdown', () =>
         {
+            this.socket.emit('changeSceneForToPunish')
             if(this.sceneNum === 1)
             {
                 console.log('start Phase1')
@@ -211,6 +202,19 @@ export default class punish extends Phaser.Scene
         this.endTurnButton.on('pointerout', () =>
         {
             self.endTurnButton.setColor('#ffffff')
+        })
+    
+        this.socket.on('changeSceneForToPunish', (numOfCardsA, numOfCardsB, numOfCardsC, numOfCardsD) =>
+        {
+            if(this.sceneNum === 1)
+            {
+                console.log('start Phase1')
+                this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
+            } else
+            {
+                console.log('start Phase2')
+                this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+            }
         })
     }
 

@@ -152,6 +152,7 @@ export default class gamePhase2 extends Phaser.Scene
                 cardsRender[i].destroy
             }    
         }
+        
         // render player cards
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))

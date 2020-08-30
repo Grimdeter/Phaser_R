@@ -1,0 +1,7 @@
+Bugs:
+    -10 cards in the hand of player is maximum
+    -after taking a card in phase2, new cards are printed on top of existing 
+    -consistency of card played and card back 
+    -doesnt render cardBacks after exiting toPunish and punish 
+    -in punish, after new card, many cards are rendered infenetly 
+    

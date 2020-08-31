@@ -3,5 +3,7 @@ Bugs:
     -after taking a card in phase2, new cards are printed on top of existing 
     -consistency of card played and card back 
     -doesnt render cardBacks after exiting toPunish and punish 
-    -in punish, after new card, many cards are rendered infenetly 
-    
+    -in punish, after new card, many cards are rendered infinetly
+    -if move is illegal. the card is still takenout
+    -Cannot read property 'hitArea' of undefined after punish
+    -after punish must save cards that are on table already

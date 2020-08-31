@@ -174,8 +174,13 @@ io.on('connection', (socket) =>
         }
     })
 
-    socket.on('punishCard', (cardObj) =>
+    socket.on('punishCard', (cardObj, playerNum) =>
     {
+        for (let i = 1; i < players[playerNum].length; i++) {
+            if (cardObj.cardValue === players[playerNum][i].cardValue && cardObj.cardSuit === players[activePlayerNum][i].cardSuit) {
+                players[playerNum].splice(i, 1)
+            }
+        }
         players[activePlayerNum].push(cardObj)
         io.sockets.connected[players[activePlayerNum][0]].emit('newCard', cardObj)
     })
@@ -339,6 +344,11 @@ io.on('connection', (socket) =>
     socket.on('changeOfSceneForPunish', () =>
     {
         io.emit('changeOfSceneForPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+    })
+
+    socket.on('tableCards', () =>
+    {
+        io.emit('tableCards', tableCards)
     })
     
     socket.on('disconnect', () =>

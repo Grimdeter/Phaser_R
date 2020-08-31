@@ -30,6 +30,7 @@ export default class punish extends Phaser.Scene
 
     create()
     {
+        this.playerNum = 0
         let self = this;
         // player signatures
         console.log('entering toPunish scene: ')
@@ -43,6 +44,7 @@ export default class punish extends Phaser.Scene
 
         if (this.activePlayerNum === 0) {
             if (this.isPlayerB === true) {
+                this.playerNum = 1
                 // player right drop zone
                 this.zoneRight = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -50,6 +52,7 @@ export default class punish extends Phaser.Scene
                 this.outlineRight = this.zoneRight.renderOutline(this.dropZoneRight)
             }
             if (this.isPlayerC === true) {
+                this.playerNum = 2
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -57,6 +60,7 @@ export default class punish extends Phaser.Scene
                 this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
             }
             if (this.isPlayerD === true) {
+                this.playerNum = 3
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -74,6 +78,7 @@ export default class punish extends Phaser.Scene
                 this.outlineLeft = this.zoneLeft.renderOutline(this.dropZoneLeft)
             }
             if (this.isPlayerC === true) {
+                this.playerNum = 2
                 // player right drop zone
                 this.zoneRight = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -81,6 +86,7 @@ export default class punish extends Phaser.Scene
                 this.outlineRight = this.zoneRight.renderOutline(this.dropZoneRight)
             }
             if (this.isPlayerD === true) {
+                this.playerNum = 3
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -99,6 +105,7 @@ export default class punish extends Phaser.Scene
                 
             }
             if (this.isPlayerB === true) {
+                this.playerNum = 1
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -107,6 +114,7 @@ export default class punish extends Phaser.Scene
                 
             }
             if (this.isPlayerD === true) {
+                this.playerNum = 3
                 // player right drop zone
                 this.zoneRight = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -124,6 +132,7 @@ export default class punish extends Phaser.Scene
                 this.outlineRight = this.zoneRight.renderOutline(this.dropZoneRight)
             }
             if (this.isPlayerB === true) {
+                this.playerNum = 1
                 // player top drop zone
                 this.zoneTop = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -131,6 +140,7 @@ export default class punish extends Phaser.Scene
                 this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
             }
             if (this.isPlayerC === true) {
+                this.playerNum = 2
                 // player left drop zone
                 this.zoneLeft = new Zone (this)
                 // render zone creates drop zone at (x, y, width, height)
@@ -168,7 +178,7 @@ export default class punish extends Phaser.Scene
                     this.playerCards.splice(i,1)
                 }
             }
-            self.socket.emit('punishCard', cardObj)
+            self.socket.emit('punishCard', cardObj, this.playerNum)
             this.socket.emit('changeSceneForToPunish')
         })
 

@@ -4,6 +4,10 @@ Bugs:
     -consistency of card played and card back 
     -doesnt render cardBacks after exiting toPunish and punish 
     -in punish, after new card, many cards are rendered infinetly
-    -if move is illegal. the card is still takenout
+    -if move is illegal. the card is still taken out
     -Cannot read property 'hitArea' of undefined after punish
     -after punish must save cards that are on table already
+    +take breaks the game Uncaught TypeError: Cannot read property 'destroy' of undefined gamePhase2.js?17f9:496 
+    -after playing card it still renders
+    -a lot of cards are on table after exiting punish
+    -check dropzone in toPunish

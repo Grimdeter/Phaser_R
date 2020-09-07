@@ -11,7 +11,7 @@ let activePlayerNum = 0;
 let oldActivePlayerNum
 let timeout
 let tableCards = []
-let trumpSuit
+let trumpSuit = 1
 let toPunishCounter
 
 // server.use(express.static(__dirname + '/client/dist'))
@@ -91,7 +91,7 @@ io.on('connection', (socket) =>
             deck.pop()
             for (let j = 0; j < 7; j++) {
                 io.sockets.connected[players[i][0]].emit('newCard', deck[deck.length - 1])
-                players[j].push(deck[deck.length - 1])
+                players[i].push(deck[deck.length - 1])
                 deck.pop()
             }
         }
@@ -227,104 +227,106 @@ io.on('connection', (socket) =>
         io.emit('topCardD', card)
     })
 
-    //commented out the hopefully working version
-    socket.on('cardPlayed', (gameObject) =>
-    {
-        if (tableCards.length !== 0)
-        {
-            console.log('last element of table cards: '+tableCards[tableCards.length-1].cardSuit + ' ' + tableCards[tableCards.length-1].cardValue)
-            console.log('gameObject: '+gameObject.cardSuit + ' ' + gameObject.cardValue)
-            if (gameObject.cardSuit === tableCards[tableCards.length - 1].cardSuit) 
-            {
-                if (gameObject.cardValue > tableCards[tableCards.length - 1].cardValue) 
-                {
-                    tableCards.push(gameObject)
-                    io.emit('cardPlayedServ', gameObject, activePlayerNum)
-                    for (let i = 1; i < players[activePlayerNum].length; i++) {
-                        if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-                            players[activePlayerNum].splice(i, 1)
-                        }
-                    }
-                    oldActivePlayerNum = activePlayerNum
-                    activePlayerNum = (activePlayerNum+1)%players.length
-                    timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
-                } else
-                {
-                    io.sockets.connected[players[activePlayerNum][0]].emit('punish')
-                    socket.broadcast.emit(`toPunish`, activePlayerNum);
-                }
-            } else
-            {
-                if (gameObject.cardSuit === trumpSuit)
-                {
-                    if (gameObject.cardSuit === 3) 
-                    {
-                        io.sockets.connected[players[activePlayerNum][0]].emit('punish')
-                        socket.broadcast.emit(`toPunish`, activePlayerNum);
-                    } else
-                    {
-                        tableCards.push(gameObject)
-                        io.emit('cardPlayedServ', gameObject, activePlayerNum)
-                        for (let i = 1; i < players[activePlayerNum].length; i++) {
-                            if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-                                players[activePlayerNum].splice(i, 1)
-                            }
-                        }
-                        oldActivePlayerNum = activePlayerNum
-                        activePlayerNum = (activePlayerNum+1)%players.length
-                        timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
-                    }
-                } else
-                {
-                    io.sockets.connected[players[activePlayerNum][0]].emit('punish')
-                    socket.broadcast.emit(`toPunish`, activePlayerNum);
-                }
-            }
-            if (tableCards.length === players.length) {
-                clearTimeout(timeout)
-                activePlayerNum = oldActivePlayerNum
-                io.sockets.connected[players[activePlayerNum][0]].emit('active')
-                tableCards.splice(0,tableCards.length)
-                io.emit('discard')
-            }
-        } else
-        {
-            tableCards.push(gameObject)
-            io.emit('cardPlayedServ', gameObject, activePlayerNum)
-            for (let i = 1; i < players[activePlayerNum].length; i++) {
-                if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-                    players[activePlayerNum].splice(i, 1)
-                }
-            }
-            oldActivePlayerNum = activePlayerNum
-            activePlayerNum = (activePlayerNum+1)%players.length
-            timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
-        }
-        outputState()
-    })
-    // testing version
+    //playing version of cardPlayed
 {
     // socket.on('cardPlayed', (gameObject) =>
     // {
-    //     tableCards.push(gameObject)
-    //     io.emit('cardPlayedServ', gameObject, activePlayerNum)
-    //     for (let i = 1; i < players[activePlayerNum].length; i++) {
-    //         if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-    //             players[activePlayerNum].splice(i, 1)
+    //     if (tableCards.length !== 0)
+    //     {
+    //         console.log('last element of table cards: '+tableCards[tableCards.length-1].cardSuit + ' ' + tableCards[tableCards.length-1].cardValue)
+    //         console.log('gameObject: '+gameObject.cardSuit + ' ' + gameObject.cardValue)
+    //         if (gameObject.cardSuit === tableCards[tableCards.length - 1].cardSuit) 
+    //         {
+    //             if (gameObject.cardValue > tableCards[tableCards.length - 1].cardValue) 
+    //             {
+    //                 tableCards.push(gameObject)
+    //                 io.emit('cardPlayedServ', gameObject, activePlayerNum)
+    //                 for (let i = 1; i < players[activePlayerNum].length; i++) {
+    //                     if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
+    //                         players[activePlayerNum].splice(i, 1)
+    //                     }
+    //                 }
+    //                 oldActivePlayerNum = activePlayerNum
+    //                 activePlayerNum = (activePlayerNum+1)%players.length
+    //                 timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+    //             } else
+    //             {
+    //                 io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+    //                 socket.broadcast.emit(`toPunish`, activePlayerNum);
+    //             }
+    //         } else
+    //         {
+    //             if (gameObject.cardSuit === trumpSuit)
+    //             {
+    //                 if (gameObject.cardSuit === 3) 
+    //                 {
+    //                     io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+    //                     socket.broadcast.emit(`toPunish`, activePlayerNum);
+    //                 } else
+    //                 {
+    //                     tableCards.push(gameObject)
+    //                     io.emit('cardPlayedServ', gameObject, activePlayerNum)
+    //                     for (let i = 1; i < players[activePlayerNum].length; i++) {
+    //                         if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
+    //                             players[activePlayerNum].splice(i, 1)
+    //                         }
+    //                     }
+    //                     oldActivePlayerNum = activePlayerNum
+    //                     activePlayerNum = (activePlayerNum+1)%players.length
+    //                     timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+    //                 }
+    //             } else
+    //             {
+    //                 io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+    //                 socket.broadcast.emit(`toPunish`, activePlayerNum);
+    //             }
     //         }
-    //     }
-    //     oldActivePlayerNum = activePlayerNum
-    //     activePlayerNum = (activePlayerNum+1)%players.length
-    //     timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
-    //     if (tableCards.length === players.length) {
-    //         clearTimeout(timeout)
-    //         activePlayerNum = oldActivePlayerNum
-    //         io.sockets.connected[players[activePlayerNum][0]].emit('active')
-    //         tableCards.splice(0,tableCards.length)
-    //         io.emit('discard')
+    //         if (tableCards.length === players.length) {
+    //             clearTimeout(timeout)
+    //             activePlayerNum = oldActivePlayerNum
+    //             io.sockets.connected[players[activePlayerNum][0]].emit('active')
+    //             tableCards.splice(0,tableCards.length)
+    //             io.emit('discard')
+    //         }
+    //     } else
+    //     {
+    //         tableCards.push(gameObject)
+    //         io.emit('cardPlayedServ', gameObject, activePlayerNum)
+    //         for (let i = 1; i < players[activePlayerNum].length; i++) {
+    //             if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
+    //                 players[activePlayerNum].splice(i, 1)
+    //             }
+    //         }
+    //         oldActivePlayerNum = activePlayerNum
+    //         activePlayerNum = (activePlayerNum+1)%players.length
+    //         timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
     //     }
     //     outputState()
     // })
+}    
+    // testing version of cardPlayed
+{
+    socket.on('cardPlayed', (gameObject) =>
+    {
+        tableCards.push(gameObject)
+        io.emit('cardPlayedServ', gameObject, activePlayerNum)
+        for (let i = 1; i < players[activePlayerNum].length; i++) {
+            if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
+                players[activePlayerNum].splice(i, 1)
+            }
+        }
+        oldActivePlayerNum = activePlayerNum
+        activePlayerNum = (activePlayerNum+1)%players.length
+        timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+        if (tableCards.length === players.length) {
+            clearTimeout(timeout)
+            activePlayerNum = oldActivePlayerNum
+            io.sockets.connected[players[activePlayerNum][0]].emit('active')
+            tableCards.splice(0,tableCards.length)
+            io.emit('discard')
+        }
+        outputState()
+    })
 }  
     socket.on('takeCard', () =>
     {
@@ -389,6 +391,11 @@ function outputState()
     console.log(`trump suit: ${trumpSuit}`)
     for (let i = 0; i < players.length; i++) {
         console.log(`number of cards in hand of player${i}: ${players[i].length-1}`)
+    }
+    console.log(`tableCards:`)
+    for(let card in tableCards)
+    {
+        console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
     }
     console.log('***********************************')
 }

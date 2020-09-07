@@ -100,12 +100,15 @@ export default class gamePhase2 extends Phaser.Scene
                 }
 
                 for (let i = 0; i < cardsRender.length; i++) {
-                    console.log(`cardsRender[i]: ${cardsRender[i]}`)
+                    console.log(`i in the loop: ${i}`)
+                    console.log(`cardsRnder.length: ${cardsRender.length}`)
                     cardsRender[i].destroy()
                 }
 
+                cardsRender.splice(0, cardsRender.length)
+
                 // render player cards
-                setTimeout(this.renderPlayerCards(cardsRender), 1100)
+                setTimeout(() => cardsRender = this.renderPlayerCards(cardsRender), 1100)
 
                 console.log(`sending card obj: cardValue: ${cardObj.cardValue} cardSuit: ${cardObj.cardSuit}`)
                 self.socket.emit('cardPlayed', cardObj)
@@ -158,11 +161,12 @@ export default class gamePhase2 extends Phaser.Scene
             this.scene.start('toPunish', {sceneNum: 2, activePlayerNum: activePlayerNum, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
-        console.log(`cardsRender.length: ${cardsRender.length}`)
 
         
         // // render player cards
-        this.renderPlayerCards(cardsRender)
+        cardsRender = this.renderPlayerCards(cardsRender)
+        console.log(`cardsRender.length: ${cardsRender.length}`)
+
 
         // render opponents cards anc change this.playerNum
         if (this.isPlayerA) 
@@ -270,6 +274,7 @@ export default class gamePhase2 extends Phaser.Scene
                 cardsRenderPlayed[i].destroy()
             }
             this.dropZoneCenter.data.values.cards=0
+            cardsRenderPlayed.splice(0,cardsRenderPlayed.length)
             cardsTableObj.splice(0, cardsTableObj.length)
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
@@ -531,7 +536,7 @@ export default class gamePhase2 extends Phaser.Scene
         {
             for(let card in tableCards)
             {
-                console.log(`table cards: card Suit: ${card.cardSuit} card Value: ${card.cardValue}`);
+                console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
             }
             for (let i = 0; i < tableCards.length; i++) {
                 cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
@@ -563,6 +568,7 @@ export default class gamePhase2 extends Phaser.Scene
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
         }
+        return cardsRender
     }
 
     renderPlayerNames()

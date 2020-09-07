@@ -32,12 +32,15 @@ export default class punish extends Phaser.Scene
         let counter = 0
         let renderCards = []
 
-        
-        this.renderPlayerCards(renderCards)
+        renderCards = this.renderPlayerCards(renderCards)
         this.socket.on('newCard', (cardObj) =>
         {
             this.playerCards.push(cardObj)
-            this.renderPlayerCards(renderCards)
+            renderCards = this.renderPlayerCards(renderCards)
+            for(let card in this.playerCards)
+            {
+                console.log(`card Suit: ${this.playerCards[card].cardSuit} card Value: ${this.playerCards[card].cardValue}`);
+            }
             counter++
             if (counter === 3) {
                 this.socket.emit('changeOfSceneForPunish')
@@ -49,11 +52,13 @@ export default class punish extends Phaser.Scene
             {
                 console.log('start Phase1')
                 this.socket.emit('turnOver')
+                this.scene.stop()
                 this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
             } else
             {
                 this.socket.emit('turnOver')
                 console.log('start Phase2')
+                this.scene.stop()
                 this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
             }
         })
@@ -62,16 +67,14 @@ export default class punish extends Phaser.Scene
     renderPlayerCards(cardsRender)
     {
         console.log(`cards render length: ${cardsRender.length}`)
-        if (cardsRender.length !== 0) {
-            for (let i = 0; i < cardsRender.length; i++) {
-                cardsRender[i].destroy
-            }    
+        for (let i = 0; i < cardsRender.length; i++) {
+            cardsRender[i].destroy()
         }
-        
-        // render player cards
+        cardsRender.splice(0, cardsRender.length)
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
         }
+        return cardsRender
     }
 
     update()

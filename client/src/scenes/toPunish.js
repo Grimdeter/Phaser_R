@@ -179,6 +179,7 @@ export default class punish extends Phaser.Scene
                 }
             }
             self.socket.emit('punishCard', cardObj, this.playerNum)
+            console.log(`I am sending change of scene for punish`)
             this.socket.emit('changeSceneForToPunish')
         })
 
@@ -219,10 +220,12 @@ export default class punish extends Phaser.Scene
             if(this.sceneNum === 1)
             {
                 console.log('start Phase1')
+                this.scene.stop()
                 this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
             } else
             {
                 console.log('start Phase2')
+                this.scene.stop()
                 this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
             }
         })

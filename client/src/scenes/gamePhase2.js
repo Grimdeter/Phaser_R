@@ -54,6 +54,7 @@ export default class gamePhase2 extends Phaser.Scene
         this.zoneCenter = new Zone (this)
         // render zone creates drop zone at (x, y, width, height)
         this.dropZoneCenter = this.zoneCenter.renderZone(700, 425, 200, 250)
+        this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x000000)
 
         this.input.on("dragend", (pointer, gameObject, dropped) =>
         {
@@ -120,6 +121,7 @@ export default class gamePhase2 extends Phaser.Scene
         {
             // this.createDropZone(this)
             this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x808080)
+            console.log(`I am active`)
             // end turn button
             this.take = this.add.text(1150, 800, ['Take']).setFontSize(18).setInteractive()
 
@@ -153,11 +155,13 @@ export default class gamePhase2 extends Phaser.Scene
         this.socket.on('punish', ()=>
         {
             clearTimeout(timeout)
+            this.scene.stop()
             this.scene.start('punish', {sceneNum: 2, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
         this.socket.on('toPunish', (activePlayerNum) =>
         {
+            this.scene.stop()
             this.scene.start('toPunish', {sceneNum: 2, activePlayerNum: activePlayerNum, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
@@ -534,6 +538,8 @@ export default class gamePhase2 extends Phaser.Scene
 
         this.socket.on('tableCards', (tableCards) =>
         {
+            this.dropZoneCenter.data.values.cards = 0
+            console.log(`tableCards: ${tableCards} tableCards.length: ${tableCards.length}`)
             for(let card in tableCards)
             {
                 console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
@@ -542,6 +548,7 @@ export default class gamePhase2 extends Phaser.Scene
                 cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
                 this.dropZoneCenter.data.values.cards++
             }
+            console.log(`cardsRenderPlayed: ${cardsRenderPlayed} cardsRenderPlayed.length: ${cardsRenderPlayed.length}`)
         })
     }
 
@@ -565,6 +572,7 @@ export default class gamePhase2 extends Phaser.Scene
         for (let i = 0; i < cardsRender.length; i++) {
             cardsRender[i].destroy()
         }
+        cardsRender.splice(0, cardsRender.length)
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
         }

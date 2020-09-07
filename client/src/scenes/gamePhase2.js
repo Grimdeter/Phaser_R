@@ -85,8 +85,6 @@ export default class gamePhase2 extends Phaser.Scene
                         let toCheck = `card_${this.playerCards[i].cardValue}_${this.playerCards[i].cardSuit}`
                         if(toCheck === gameObject.texture.key)
                         {
-                            cardObj = this.playerCards[i]
-                            console.log(`cardObj ${cardObj.cardSuit} ${cardObj.cardValue}`)
                             this.playerCards.splice(i,1)
                         }
                     }
@@ -101,7 +99,6 @@ export default class gamePhase2 extends Phaser.Scene
                     }
                 }
 
-                console.log(`cardsRender: ${cardsRender}`)
                 for (let i = 0; i < cardsRender.length; i++) {
                     console.log(`cardsRender[i]: ${cardsRender[i]}`)
                     cardsRender[i].destroy()
@@ -112,7 +109,7 @@ export default class gamePhase2 extends Phaser.Scene
 
                 console.log(`sending card obj: cardValue: ${cardObj.cardValue} cardSuit: ${cardObj.cardSuit}`)
                 self.socket.emit('cardPlayed', cardObj)
-            }   
+            }
         })
 
         // add render of new cards after take 
@@ -162,15 +159,10 @@ export default class gamePhase2 extends Phaser.Scene
         })
 
         console.log(`cardsRender.length: ${cardsRender.length}`)
-        if (cardsRender.length !== 0) {
-            for (let i = 0; i < cardsRender.length; i++) {
-                cardsRender[i].destroy()
-            }    
-        }
+
         
         // // render player cards
         this.renderPlayerCards(cardsRender)
-        console.log(`Breakpoint1`)
 
         // render opponents cards anc change this.playerNum
         if (this.isPlayerA) 
@@ -241,7 +233,6 @@ export default class gamePhase2 extends Phaser.Scene
                 cardsRenderOpponent3[i].angle = 90
             }
         }
-        console.log(`Breakpoint1.5`)
 
         this.socket.on('cardPlayedServ', (gameObject, activePlayerNum) =>
         {
@@ -532,11 +523,9 @@ export default class gamePhase2 extends Phaser.Scene
                 }
             }
         })
-        console.log(`Breakpoint2`)
         
         this.socket.emit('tableCards')
         this.renderPlayerNames()
-        console.log(`Breakpoint3`)
 
         this.socket.on('tableCards', (tableCards) =>
         {
@@ -544,12 +533,9 @@ export default class gamePhase2 extends Phaser.Scene
             {
                 console.log(`table cards: card Suit: ${card.cardSuit} card Value: ${card.cardValue}`);
             }
-            if (tableCards.length !== 0)
-            {
-                for (let i = 0; i < tableCards.length; i++) {
-                    cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
-                    this.dropZoneCenter.data.values.cards++
-                }
+            for (let i = 0; i < tableCards.length; i++) {
+                cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
+                this.dropZoneCenter.data.values.cards++
             }
         })
     }
@@ -571,6 +557,9 @@ export default class gamePhase2 extends Phaser.Scene
 
     renderPlayerCards(cardsRender)
     {
+        for (let i = 0; i < cardsRender.length; i++) {
+            cardsRender[i].destroy()
+        }
         for (let i = 0; i < this.playerCards.length; i++) {
             cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
         }

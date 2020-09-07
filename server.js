@@ -62,6 +62,25 @@ io.on('connection', (socket) =>
     //     socket.emit('isSpectator');
     // }
 
+    // deployment playersReady
+{
+    // socket.on('playersReady', () =>
+    // {
+    //     for (let i = 0 ; i < players.length; i++) {
+    //         console.log("socket id of player: " + players[i])
+    //         io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
+    //         deck.pop()
+    //         io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
+    //         deck.pop()
+    //     }
+
+    //     io.emit('deckCard', deck[deck.length - 1])
+
+    //     io.sockets.connected[players[activePlayerNum][0]].emit('active')
+    // })
+}
+
+    // testing playersReady, which skips directly into phase2
     socket.on('playersReady', () =>
     {
         for (let i = 0 ; i < players.length; i++) {
@@ -70,11 +89,16 @@ io.on('connection', (socket) =>
             deck.pop()
             io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
             deck.pop()
+            for (let j = 0; j < 7; j++) {
+                io.sockets.connected[players[i][0]].emit('newCard', deck[deck.length - 1])
+                players[j].push(deck[deck.length - 1])
+                deck.pop()
+            }
         }
 
-        io.emit('deckCard', deck[deck.length - 1])
-
-        io.sockets.connected[players[activePlayerNum][0]].emit('active')
+        io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+        outputPlayersArray(players)
+        setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
     })
 
     socket.on('turnOver', () =>
@@ -164,9 +188,7 @@ io.on('connection', (socket) =>
             activePlayerNum = (activePlayerNum+1)%4
             io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
             outputPlayersArray(players)
-            console.log('players array: ' + players)
             io.sockets.connected[players[activePlayerNum][0]].emit('active')
-            console.log('trump suit: ' + trumpSuit)
             setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
         } else
         {

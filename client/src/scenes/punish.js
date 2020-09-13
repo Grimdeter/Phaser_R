@@ -33,7 +33,7 @@ export default class punish extends Phaser.Scene
         let renderCards = []
 
         renderCards = this.renderPlayerCards(renderCards)
-        this.socket.on('newCard', (cardObj) =>
+        this.socket.on('newCardP', (cardObj) =>
         {
             this.playerCards.push(cardObj)
             renderCards = this.renderPlayerCards(renderCards)

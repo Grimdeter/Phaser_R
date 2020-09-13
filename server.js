@@ -204,7 +204,7 @@ io.on('connection', (socket) =>
             }
         }
         players[activePlayerNum].push(cardObj)
-        io.sockets.connected[players[activePlayerNum][0]].emit('newCard', cardObj)
+        io.sockets.connected[players[activePlayerNum][0]].emit('newCardP', cardObj)
     })
 
     socket.on('topCardA', (card) =>
@@ -248,11 +248,11 @@ io.on('connection', (socket) =>
                     }
                     oldActivePlayerNum = activePlayerNum
                     activePlayerNum = (activePlayerNum+1)%players.length
-                    timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+                    timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 1500)
                 } else
                 {
-                    io.sockets.connected[players[activePlayerNum][0]].emit('punish')
-                    socket.broadcast.emit(`toPunish`, activePlayerNum);
+                    io.sockets.connected[players[activePlayerNum][0]].emit('punish2')
+                    socket.broadcast.emit(`toPunish2`, activePlayerNum);
                 }
             } else
             {
@@ -260,8 +260,8 @@ io.on('connection', (socket) =>
                 {
                     if (tableCards[tableCards.length - 1].cardSuit === 3) 
                     {
-                        io.sockets.connected[players[activePlayerNum][0]].emit('punish')
-                        socket.broadcast.emit(`toPunish`, activePlayerNum);
+                        io.sockets.connected[players[activePlayerNum][0]].emit('punish2')
+                        socket.broadcast.emit(`toPunish2`, activePlayerNum);
                     } else
                     {
                         tableCards.push(gameObject)
@@ -273,18 +273,18 @@ io.on('connection', (socket) =>
                         }
                         oldActivePlayerNum = activePlayerNum
                         activePlayerNum = (activePlayerNum+1)%players.length
-                        timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+                        timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 1500)
                     }
                 } else
                 {
-                    io.sockets.connected[players[activePlayerNum][0]].emit('punish')
-                    socket.broadcast.emit(`toPunish`, activePlayerNum);
+                    io.sockets.connected[players[activePlayerNum][0]].emit('punish2')
+                    socket.broadcast.emit(`toPunish2`, activePlayerNum);
                 }
             }
             if (tableCards.length === players.length) {
                 clearTimeout(timeout)
                 activePlayerNum = oldActivePlayerNum
-                io.sockets.connected[players[activePlayerNum][0]].emit('active')
+                io.sockets.connected[players[activePlayerNum][0]].emit('active2')
                 tableCards.splice(0,tableCards.length)
                 io.emit('discard')
             }
@@ -299,7 +299,7 @@ io.on('connection', (socket) =>
             }
             oldActivePlayerNum = activePlayerNum
             activePlayerNum = (activePlayerNum+1)%players.length
-            timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 1500)
+            timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 1500)
         }
         outputState()
     })
@@ -331,7 +331,7 @@ io.on('connection', (socket) =>
     socket.on('takeCard', () =>
     {
         if (tableCards.length !== 0 ) {
-            io.sockets.connected[players[activePlayerNum][0]].emit('newCard', tableCards[0])
+            io.sockets.connected[players[activePlayerNum][0]].emit('newCard2', tableCards[0])
             players[activePlayerNum].push(tableCards[0])
             tableCards.shift()
             io.emit('cardTaken', activePlayerNum)

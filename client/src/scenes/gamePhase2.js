@@ -117,7 +117,7 @@ export default class gamePhase2 extends Phaser.Scene
         })
 
         // add render of new cards after take 
-        this.socket.on('active', () =>
+        this.socket.on('active2', () =>
         {
             // this.createDropZone(this)
             this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x808080)
@@ -152,14 +152,14 @@ export default class gamePhase2 extends Phaser.Scene
             gameObject.y = dragY;
         })
 
-        this.socket.on('punish', ()=>
+        this.socket.on('punish2', ()=>
         {
             clearTimeout(timeout)
             this.scene.stop()
             this.scene.start('punish', {sceneNum: 2, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
 
-        this.socket.on('toPunish', (activePlayerNum) =>
+        this.socket.on('toPunish2', (activePlayerNum) =>
         {
             this.scene.stop()
             this.scene.start('toPunish', {sceneNum: 2, activePlayerNum: activePlayerNum, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
@@ -486,10 +486,10 @@ export default class gamePhase2 extends Phaser.Scene
             }
         })
         
-        this.socket.on('newCard', (gameObject) =>
+        this.socket.on('newCard2', (gameObject) =>
         {
             console.log('playerCards.lenght: ' + this.playerCards.length)
-            // this.playerCards.push(gameObject)
+            this.playerCards.push(gameObject)
             console.log('playerCards: ' + this.playerCards)
 
             for (let i = 0; i < cardsRender.length; i++) {
@@ -504,7 +504,6 @@ export default class gamePhase2 extends Phaser.Scene
         
         this.socket.on('podvalTaken', (playerNum) =>
         {
-            console.log('entered podvalTaken')
             if(playerNum !== this.playerNum)
             {
                 let diff = this.playerNum - playerNum

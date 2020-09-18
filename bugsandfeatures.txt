@@ -4,10 +4,14 @@ Bugs:
     +after playing card it still renders
     +consistency of card played and card back 
     +take breaks the game Uncaught TypeError: Cannot read property 'destroy' of undefined gamePhase2.js?17f9:496 
+    +the scene changes from toPunish to gamePhase2 only after 1 card is left in the player's hand 
+    +in punish, after new card, many cards are rendered infinetly
+    +doesnt render cardBacks after exiting toPunish and punish 
+    +Cannot read property 'hitArea' of undefined after punish (gamephase 122 maybe?) (the problem can be the scenes being run in the background)
+    +if move is illegal. the card is still taken out
+    +multiple same cards are rendered after exiting punish (having different events for different scenes might solve the problem)
+    +after punish must save cards that are on table already
     -10 cards in the hand of player is maximum
-    -doesnt render cardBacks after exiting toPunish and punish 
-    -in punish, after new card, many cards are rendered infinetly
-    -if move is illegal. the card is still taken out
-    -Cannot read property 'hitArea' of undefined after punish (gamephase 122 maybe?) (the problem can be the scenes being run in the background)
-    -after punish must save cards that are on table already
-    -multiple same cards are rendered after exiting punish (having different events for different scenes might solve the problem)
+    -no active player after ending the punish event
+    -disable zone after dropping card into it (toPunish)
+    -on the server, it changes activePlayerNum somewhere before the active to emmited after punish event

@@ -8,11 +8,11 @@ let players = []
 let spectators = []
 let deck 
 let activePlayerNum = 0;
-let oldActivePlayerNum
+let oldActivePlayerNum = 0
 let timeout
 let tableCards = []
 let trumpSuit = 1
-let toPunishCounter
+let toPunishCounter = 0
 
 // server.use(express.static(__dirname + '/client/dist'))
 
@@ -96,9 +96,10 @@ io.on('connection', (socket) =>
             }
         }
 
+
         io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
         outputPlayersArray(players)
-        setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
+        setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 4500)
     })
 
     socket.on('turnOver', () =>
@@ -362,9 +363,12 @@ io.on('connection', (socket) =>
         toPunishCounter++
         if (toPunishCounter === players.length-1) {
             io.emit('changeSceneForToPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+            setTimeout(() => {io.sockets.connected[players[activePlayerNum-1][0]].emit('active2')}, 4500)
+            outputState()
+
         }
     })
-
+ 
     socket.on('changeOfSceneForPunish', () =>
     {
         io.emit('changeOfSceneForPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)

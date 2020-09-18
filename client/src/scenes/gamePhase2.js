@@ -537,6 +537,11 @@ export default class gamePhase2 extends Phaser.Scene
 
         this.socket.on('tableCards', (tableCards) =>
         {
+            this.zoneCenter = new Zone (this)
+            // render zone creates drop zone at (x, y, width, height)
+            this.dropZoneCenter = this.zoneCenter.renderZone(700, 425, 200, 250)
+            this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x000000)
+            
             this.dropZoneCenter.data.values.cards = 0
             console.log(`tableCards: ${tableCards} tableCards.length: ${tableCards.length}`)
             for(let card in tableCards)

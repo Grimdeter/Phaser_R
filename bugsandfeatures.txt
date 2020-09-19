@@ -11,7 +11,9 @@ Bugs:
     +if move is illegal. the card is still taken out
     +multiple same cards are rendered after exiting punish (having different events for different scenes might solve the problem)
     +after punish must save cards that are on table already
+    +take card is broken
+    +no active player after ending the punish event
+    +on the server, it changes activePlayerNum somewhere before the active to emmited after punish event
     -10 cards in the hand of player is maximum
-    -no active player after ending the punish event
     -disable zone after dropping card into it (toPunish)
-    -on the server, it changes activePlayerNum somewhere before the active to emmited after punish event
+    -doesnt delete the cards whcih went into punish after punish event

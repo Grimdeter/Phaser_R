@@ -104,13 +104,8 @@ io.on('connection', (socket) =>
 
     socket.on('turnOver', () =>
     {
-        if (activePlayerNum !== (players.length - 1)) {
-            activePlayerNum++
-        } else
-        {
-            activePlayerNum = 0;
-        }
-        // console.log(activePlayerNum)
+        oldActivePlayerNum = activePlayerNum
+        activePlayerNum = (activePlayerNum+1)%players.length
         io.sockets.connected[players[activePlayerNum][0]].emit('active')
     })
 
@@ -199,14 +194,19 @@ io.on('connection', (socket) =>
 
     socket.on('punishCard', (cardObj, playerNum) =>
     {
+        console.log(`i am enetring punish card in the server`)
+        console.log(`recieved cardObj: ${cardObj.cardSuit} ${cardObj.cardValue}`)
+        outputPlayersArray(players)
         for (let i = 1; i < players[playerNum].length; i++) {
             if (cardObj.cardValue === players[playerNum][i].cardValue && cardObj.cardSuit === players[activePlayerNum][i].cardSuit) {
                 players[playerNum].splice(i, 1)
+                console.log(`players[playerNum].lenght ${players[playerNum].length}`)
             }
         }
         players[activePlayerNum].push(cardObj)
+        outputPlayersArray(players)
         io.sockets.connected[players[activePlayerNum][0]].emit('newCardP', cardObj)
-    })
+    }) 
 
     socket.on('topCardA', (card) =>
     {
@@ -337,8 +337,9 @@ io.on('connection', (socket) =>
             tableCards.shift()
             io.emit('cardTaken', activePlayerNum)
         }
+        oldActivePlayerNum = activePlayerNum
         activePlayerNum = (activePlayerNum+1)%players.length
-        io.sockets.connected[players[activePlayerNum][0]].emit('active')
+        io.sockets.connected[players[activePlayerNum][0]].emit('active2')
         outputState()
     })
 
@@ -363,7 +364,7 @@ io.on('connection', (socket) =>
         toPunishCounter++
         if (toPunishCounter === players.length-1) {
             io.emit('changeSceneForToPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
-            setTimeout(() => {io.sockets.connected[players[activePlayerNum-1][0]].emit('active2')}, 4500)
+            setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 4500)
             outputState()
 
         }
@@ -389,25 +390,26 @@ io.on('connection', (socket) =>
 
 function outputState()
 {
-    console.log(`active player num: ${activePlayerNum}`)
-    console.log(`old active player num: ${oldActivePlayerNum}`)
-    console.log(`number of players : ${players.length}`)
-    console.log(`trump suit: ${trumpSuit}`)
-    for (let i = 0; i < players.length; i++) {
-        console.log(`number of cards in hand of player${i}: ${players[i].length-1}`)
-    }
-    console.log(`tableCards:`)
-    for(let card in tableCards)
-    {
-        console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
-    }
-    console.log('***********************************')
+    // console.log('**********OUTPUT STATE*************')
+    // console.log(`active player num: ${activePlayerNum}`)
+    // console.log(`old active player num: ${oldActivePlayerNum}`)
+    // console.log(`number of players : ${players.length}`)
+    // console.log(`trump suit: ${trumpSuit}`)
+    // for (let i = 0; i < players.length; i++) {
+    //     console.log(`number of cards in hand of player${i}: ${players[i].length-1}`)
+    // }
+    // console.log(`tableCards:`)
+    // for(let card in tableCards)
+    // {
+    //     console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
+    // }
+    // console.log('***********************************')
 }
-
+ 
 function outputPlayersArray(players)
 {
-    for(var i = 0; i < players.length; i++) {
-        var player = players[i];
+    for(let i = 0; i < players.length; i++) {
+        let player = players[i];
         console.log(`socket id of player: ${player[0]}`);
         for(let card in player)
         {

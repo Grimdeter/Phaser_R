@@ -1,0 +1,4 @@
+Plans what to add into this project: 
+    adaptive cards in the hand (the size of cards and layout will change depending on the amount of cards in the hand)
+    multiple simultanious sessions support
+    import proper assests

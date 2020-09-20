@@ -194,17 +194,15 @@ io.on('connection', (socket) =>
 
     socket.on('punishCard', (cardObj, playerNum) =>
     {
-        console.log(`i am enetring punish card in the server`)
-        console.log(`recieved cardObj: ${cardObj.cardSuit} ${cardObj.cardValue}`)
-        outputPlayersArray(players)
-        for (let i = 1; i < players[playerNum].length; i++) {
-            if (cardObj.cardValue === players[playerNum][i].cardValue && cardObj.cardSuit === players[activePlayerNum][i].cardSuit) {
-                players[playerNum].splice(i, 1)
-                console.log(`players[playerNum].lenght ${players[playerNum].length}`)
+        let player = players[playerNum];
+        for(let card in player)
+        {
+            if (player[card].cardSuit === cardObj.cardSuit && player[card].cardValue === cardObj.cardValue) 
+            {
+                players[playerNum].splice(card, 1)
             }
         }
         players[activePlayerNum].push(cardObj)
-        outputPlayersArray(players)
         io.sockets.connected[players[activePlayerNum][0]].emit('newCardP', cardObj)
     }) 
 
@@ -390,32 +388,43 @@ io.on('connection', (socket) =>
 
 function outputState()
 {
-    // console.log('**********OUTPUT STATE*************')
-    // console.log(`active player num: ${activePlayerNum}`)
-    // console.log(`old active player num: ${oldActivePlayerNum}`)
-    // console.log(`number of players : ${players.length}`)
-    // console.log(`trump suit: ${trumpSuit}`)
-    // for (let i = 0; i < players.length; i++) {
-    //     console.log(`number of cards in hand of player${i}: ${players[i].length-1}`)
-    // }
-    // console.log(`tableCards:`)
-    // for(let card in tableCards)
-    // {
-    //     console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
-    // }
-    // console.log('***********************************')
+    console.log('**********OUTPUT STATE*************')
+    console.log(`active player num: ${activePlayerNum}`)
+    console.log(`old active player num: ${oldActivePlayerNum}`)
+    console.log(`number of players : ${players.length}`)
+    console.log(`trump suit: ${trumpSuit}`)
+    for (let i = 0; i < players.length; i++) {
+        console.log(`number of cards in hand of player${i}: ${players[i].length-1}`)
+    }
+    console.log(`tableCards:`)
+    for(let card in tableCards)
+    {
+        console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
+    }
+    console.log('***********************************')
 }
  
 function outputPlayersArray(players)
 {
     for(let i = 0; i < players.length; i++) {
         let player = players[i];
-        console.log(`socket id of player: ${player[0]}`);
+        console.log(`socket id of player: ${player[0]}, this is player ${i}`);
         for(let card in player)
         {
             console.log(`card Suit: ${player[card].cardSuit} card Value: ${player[card].cardValue}`);
         }
     }
+}
+
+function outputPlayerHand(playerNum)
+{
+    let player = players[playerNum];
+    console.log(`player${playerNum} socket id of player: ${player[0]}`);
+    for(let card in player)
+    {
+        console.log(`card Suit: ${player[card].cardSuit} card Value: ${player[card].cardValue}`);
+    }
+    console.log(`player player${playerNum}'s number of cards: ${player.length-1}`);
 }
 
 http.listen(PORT, () =>

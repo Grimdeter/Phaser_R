@@ -47,9 +47,9 @@ export default class gamePhase2 extends Phaser.Scene
         let cardsRenderOpponent2 = []
         let cardsRenderOpponent3 = []
         let cardsRenderPlayed = []
-        let cardsTableObj = []
         let timeout 
 
+        this.cardsTableObj = []
         // creates table drop zone
         this.zoneCenter = new Zone (this)
         // render zone creates drop zone at (x, y, width, height)
@@ -245,7 +245,7 @@ export default class gamePhase2 extends Phaser.Scene
         this.socket.on('cardPlayedServ', (gameObject, activePlayerNum) =>
         {
             console.log('cardPlayedServ')
-            cardsTableObj.push(gameObject)
+            this.cardsTableObj.push(gameObject)
             this.dropZoneCenter.data.values.cards++
             cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, gameObject).disableInteractive()) 
             console.log('cardsRenderPlayed: ' + cardsRenderPlayed)
@@ -279,7 +279,7 @@ export default class gamePhase2 extends Phaser.Scene
             }
             this.dropZoneCenter.data.values.cards=0
             cardsRenderPlayed.splice(0,cardsRenderPlayed.length)
-            cardsTableObj.splice(0, cardsTableObj.length)
+            this.cardsTableObj.splice(0, this.cardsTableObj.length)
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
                     this.socket.emit('win', this.playerNum)
@@ -373,12 +373,12 @@ export default class gamePhase2 extends Phaser.Scene
             for (let i = 0; i < cardsRenderPlayed.length; i++) {
                 cardsRenderPlayed[i].destroy()
             }
-            cardsTableObj.shift()
+            this.cardsTableObj.shift()
             this.dropZoneCenter.data.values.cards=0
             
-            console.log('cardTableObj: ' + cardsTableObj)
-            for (let i = 0; i < cardsTableObj.length; i++) {
-                cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, cardsTableObj[i]).disableInteractive()) 
+            console.log('cardTableObj: ' + this.cardsTableObj)
+            for (let i = 0; i < this.cardsTableObj.length; i++) {
+                cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, this.cardsTableObj[i]).disableInteractive()) 
                 this.dropZoneCenter.data.values.cards++
             }
             
@@ -535,24 +535,30 @@ export default class gamePhase2 extends Phaser.Scene
         this.socket.emit('tableCards')
         this.renderPlayerNames()
 
+        let functionExecuted = false 
         this.socket.on('tableCards', (tableCards) =>
         {
-            this.zoneCenter = new Zone (this)
-            // render zone creates drop zone at (x, y, width, height)
-            this.dropZoneCenter = this.zoneCenter.renderZone(700, 425, 200, 250)
-            this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x000000)
-            
-            this.dropZoneCenter.data.values.cards = 0
-            console.log(`tableCards: ${tableCards} tableCards.length: ${tableCards.length}`)
-            for(let card in tableCards)
+            if (functionExecuted === false)
             {
-                console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
+                this.cardsTableObj = tableCards
+                // this.zoneCenter = new Zone (this)
+                // // render zone creates drop zone at (x, y, width, height)
+                // this.dropZoneCenter = this.zoneCenter.renderZone(700, 425, 200, 250)
+                // this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x000000)
+                
+                this.dropZoneCenter.data.values.cards = 0
+                console.log(`tableCards: ${tableCards} tableCards.length: ${tableCards.length}`)
+                for(let card in tableCards)
+                {
+                    console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
+                }
+                for (let i = 0; i < tableCards.length; i++) {
+                    cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
+                    this.dropZoneCenter.data.values.cards++
+                }
+                console.log(`cardsRenderPlayed: ${cardsRenderPlayed} cardsRenderPlayed.length: ${cardsRenderPlayed.length}`)
+                functionExecuted = true
             }
-            for (let i = 0; i < tableCards.length; i++) {
-                cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
-                this.dropZoneCenter.data.values.cards++
-            }
-            console.log(`cardsRenderPlayed: ${cardsRenderPlayed} cardsRenderPlayed.length: ${cardsRenderPlayed.length}`)
         })
     }
 

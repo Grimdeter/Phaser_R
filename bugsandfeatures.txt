@@ -14,6 +14,8 @@ Bugs:
     +take card is broken
     +no active player after ending the punish event
     +on the server, it changes activePlayerNum somewhere before the active to emmited after punish event
+    +doesnt delete the cards whcih went into punish after punish event
     -10 cards in the hand of player is maximum
     -disable zone after dropping card into it (toPunish)
-    -doesnt delete the cards whcih went into punish after punish event
+    -after punish event, first played card rendered twice (cardPlayedServ executed twice)
+    -doesnt change scene back after second punish

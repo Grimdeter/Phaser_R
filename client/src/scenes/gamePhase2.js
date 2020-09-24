@@ -42,12 +42,11 @@ export default class gamePhase2 extends Phaser.Scene
         let cardBackObj = new Card().setCardData(0, 0)
         console.log(`entered gamePhase2`)
 
-        let cardsRender = []
-        let cardsRenderOpponent1 = []
-        let cardsRenderOpponent2 = []
-        let cardsRenderOpponent3 = []
-        let cardsRenderPlayed = []
-        let timeout 
+        this.cardsRender = []
+        this.cardsRenderOpponent1 = []
+        this.cardsRenderOpponent2 = []
+        this.cardsRenderOpponent3 = []
+        this.cardsRenderPlayed = []
 
         this.cardsTableObj = []
         // creates table drop zone
@@ -64,7 +63,8 @@ export default class gamePhase2 extends Phaser.Scene
                 gameObject.y = gameObject.input.dragStartY;
             }
         })
-
+    // drop in the create 
+{
         this.input.on("drop", (pointer, gameObject, dropZoneCenter) =>
         {
             if (this.isActive === false)
@@ -80,7 +80,7 @@ export default class gamePhase2 extends Phaser.Scene
                 this.take.disableInteractive()
                 this.outlineCenter = this.zoneCenter.renderOutline(this.dropZoneCenter, 0x000000)
                 let cardObj
-                timeout = setTimeout(()=>
+                this.timeout = setTimeout(()=>
                 {
                     for (let i = 0; i < this.playerCards.length; i++) {
                         let toCheck = `card_${this.playerCards[i].cardValue}_${this.playerCards[i].cardSuit}`
@@ -100,22 +100,22 @@ export default class gamePhase2 extends Phaser.Scene
                     }
                 }
 
-                for (let i = 0; i < cardsRender.length; i++) {
+                for (let i = 0; i < this.cardsRender.length; i++) {
                     console.log(`i in the loop: ${i}`)
-                    console.log(`cardsRnder.length: ${cardsRender.length}`)
-                    cardsRender[i].destroy()
+                    console.log(`cardsRnder.length: ${this.cardsRender.length}`)
+                    this.cardsRender[i].destroy()
                 }
 
-                cardsRender.splice(0, cardsRender.length)
+                this.cardsRender.splice(0, this.cardsRender.length)
 
                 // render player cards
-                setTimeout(() => cardsRender = this.renderPlayerCards(cardsRender), 1100)
+                setTimeout(() => this.cardsRender = this.renderPlayerCards(this.cardsRender), 1100)
 
                 console.log(`sending card obj: cardValue: ${cardObj.cardValue} cardSuit: ${cardObj.cardSuit}`)
                 self.socket.emit('cardPlayed', cardObj)
             }
         })
-
+}
         // add render of new cards after take 
         this.socket.on('active2', () =>
         {
@@ -154,7 +154,7 @@ export default class gamePhase2 extends Phaser.Scene
 
         this.socket.on('punish2', ()=>
         {
-            clearTimeout(timeout)
+            clearTimeout(this.timeout)
             this.scene.stop()
             this.scene.start('punish', {sceneNum: 2, playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
@@ -168,8 +168,8 @@ export default class gamePhase2 extends Phaser.Scene
 
         
         // // render player cards
-        cardsRender = this.renderPlayerCards(cardsRender)
-        console.log(`cardsRender.length: ${cardsRender.length}`)
+        this.cardsRender = this.renderPlayerCards(this.cardsRender)
+        console.log(`this.cardsRender.length: ${this.cardsRender.length}`)
 
 
         // render opponents cards anc change this.playerNum
@@ -177,68 +177,68 @@ export default class gamePhase2 extends Phaser.Scene
         {
             // render of playersCardsC 
             for (let i = 0; i < this.numOfCardsC; i++) {
-                cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
             }
             // render of playersCardsB 
             for (let i = 0; i < this.numOfCardsB; i++) {
-                cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent1[i].angle = 90
+                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent1[i].angle = 90
             }
             // render of playersCardsD
             for (let i = 0; i < this.numOfCardsD; i++) {
-                cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent3[i].angle = 90
+                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent3[i].angle = 90
             }
         } else if (this.isPlayerB)
         {
             this.playerNum = 1
             // render of playersCardsD
             for (let i = 0; i < this.numOfCardsD; i++) {
-                cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
             }
             // render of playersCardsC
             for (let i = 0; i < this.numOfCardsC; i++) {
-                cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent1[i].angle = 90
+                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent1[i].angle = 90
             }
             // render of playersCardsA
             for (let i = 0; i < this.numOfCardsA; i++) {
-                cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent3[i].angle = 90
+                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent3[i].angle = 90
             }
         } else if (this.isPlayerC)
         {
             this.playerNum = 2
             // render of playersCardsA
             for (let i = 0; i < this.numOfCardsA; i++) {
-                cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
             }
             // render of playersCardsD
             for (let i = 0; i < this.numOfCardsD; i++) {
-                cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent1[i].angle = 90
+                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent1[i].angle = 90
             }
             // render of playersCardsB
             for (let i = 0; i < this.numOfCardsB; i++) {
-                cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent3[i].angle = 90
+                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent3[i].angle = 90
             }
         } else if (this.isPlayerD)
         {
             this.playerNum = 3
             // render of playersCardsB
             for (let i = 0; i < this.numOfCardsB; i++) {
-                cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
             }
             // render of playersCardsA
             for (let i = 0; i < this.numOfCardsA; i++) {
-                cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent1[i].angle = 90
+                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent1[i].angle = 90
             }
             // render of playersCardsC
             for (let i = 0; i < this.numOfCardsC; i++) {
-                cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                cardsRenderOpponent3[i].angle = 90
+                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+                this.cardsRenderOpponent3[i].angle = 90
             }
         }
 
@@ -247,25 +247,25 @@ export default class gamePhase2 extends Phaser.Scene
             console.log('cardPlayedServ')
             this.cardsTableObj.push(gameObject)
             this.dropZoneCenter.data.values.cards++
-            cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, gameObject).disableInteractive()) 
-            console.log('cardsRenderPlayed: ' + cardsRenderPlayed)
+            this.cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, gameObject).disableInteractive()) 
+            console.log('this.cardsRenderPlayed: ' + this.cardsRenderPlayed)
             if(activePlayerNum !== this.playerNum)
             {
                 let diff = this.playerNum - activePlayerNum
                 console.log('diff: ' + diff)
                 if (diff === 3 || diff === -1) 
                 {
-                    let toDestroy = cardsRenderOpponent1.pop()
+                    let toDestroy = this.cardsRenderOpponent1.pop()
                     toDestroy.destroy()
                 }
                 if (diff === 2 || diff === -2) 
                 {
-                    let toDestroy = cardsRenderOpponent2.pop()
+                    let toDestroy = this.cardsRenderOpponent2.pop()
                     toDestroy.destroy()
                 }
                 if (diff === 1 || diff === -3) 
                 {
-                    let toDestroy = cardsRenderOpponent3.pop()
+                    let toDestroy = this.cardsRenderOpponent3.pop()
                     toDestroy.destroy()
                 }
             }
@@ -274,11 +274,11 @@ export default class gamePhase2 extends Phaser.Scene
         //discard, win, podval, selection on new trumpSuit
         this.socket.on('discard', () =>
         {
-            for (let i = 0; i < cardsRenderPlayed.length; i++) {
-                cardsRenderPlayed[i].destroy()
+            for (let i = 0; i < this.cardsRenderPlayed.length; i++) {
+                this.cardsRenderPlayed[i].destroy()
             }
             this.dropZoneCenter.data.values.cards=0
-            cardsRenderPlayed.splice(0,cardsRenderPlayed.length)
+            this.cardsRenderPlayed.splice(0,this.cardsRenderPlayed.length)
             this.cardsTableObj.splice(0, this.cardsTableObj.length)
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
@@ -290,7 +290,7 @@ export default class gamePhase2 extends Phaser.Scene
                     
                     // render player cards
                     for (let i = 0; i < this.playerCards.length; i++) {
-                        cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+                        this.cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
                     }
                     //creating the button to chose new trump suit (1)
                     {
@@ -370,15 +370,15 @@ export default class gamePhase2 extends Phaser.Scene
         this.socket.on('cardTaken', (activePlayerNum) =>
         {
             console.log('entered cardTaken')
-            for (let i = 0; i < cardsRenderPlayed.length; i++) {
-                cardsRenderPlayed[i].destroy()
+            for (let i = 0; i < this.cardsRenderPlayed.length; i++) {
+                this.cardsRenderPlayed[i].destroy()
             }
             this.cardsTableObj.shift()
             this.dropZoneCenter.data.values.cards=0
             
             console.log('cardTableObj: ' + this.cardsTableObj)
             for (let i = 0; i < this.cardsTableObj.length; i++) {
-                cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, this.cardsTableObj[i]).disableInteractive()) 
+                this.cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, this.cardsTableObj[i]).disableInteractive()) 
                 this.dropZoneCenter.data.values.cards++
             }
             
@@ -387,17 +387,17 @@ export default class gamePhase2 extends Phaser.Scene
                 let diff = this.playerNum - activePlayerNum
                 if (diff === 3 || diff === -1) 
                 {
-                    cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
-                    cardsRenderOpponent1[cardsRenderOpponent1.length-1].angle = 90
+                    this.cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent1[this.cardsRenderOpponent1.length-1].angle = 90
                 }
                 if (diff === 2 || diff === -2) 
                 {
-                    cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
                 }
                 if (diff === 1 || diff === -3) 
                 {
-                    cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
-                    cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
+                    this.cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent3[this.cardsRenderOpponent3.length-1].angle = 90
                 }
             }
             if (this.playerCards.length === 0) {
@@ -409,7 +409,7 @@ export default class gamePhase2 extends Phaser.Scene
                     
                     // render player cards
                     for (let i = 0; i < this.playerCards.length; i++) {
-                        cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+                        this.cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
                     }
                     //creating the button to chose new trump suit (1)
                     {
@@ -492,13 +492,13 @@ export default class gamePhase2 extends Phaser.Scene
             this.playerCards.push(gameObject)
             console.log('playerCards: ' + this.playerCards)
 
-            for (let i = 0; i < cardsRender.length; i++) {
-                cardsRender[i].destroy()
+            for (let i = 0; i < this.cardsRender.length; i++) {
+                this.cardsRender[i].destroy()
             }
 
             // render player cards
             for (let i = 0; i < this.playerCards.length; i++) {
-                cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+                this.cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
             }
         })
         
@@ -509,25 +509,25 @@ export default class gamePhase2 extends Phaser.Scene
                 let diff = this.playerNum - playerNum
                 if (diff === 3 || diff === -1) 
                 {
-                    cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
-                    cardsRenderOpponent1[cardsRenderOpponent1.length-1].angle = 90
-                    cardsRenderOpponent1.push((new Card(this)).render(150, 200, cardBackObj).disableInteractive())
-                    cardsRenderOpponent1[cardsRenderOpponent1.length-1].angle = 90
-                    console.log(`number of cards of the opponent1(left) ${cardsRenderOpponent1.length}`)
+                    this.cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent1[this.cardsRenderOpponent1.length-1].angle = 90
+                    this.cardsRenderOpponent1.push((new Card(this)).render(150, 200, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent1[this.cardsRenderOpponent1.length-1].angle = 90
+                    console.log(`number of cards of the opponent1(left) ${this.cardsRenderOpponent1.length}`)
                 }
                 if (diff === 2 || diff === -2) 
                 {
-                    cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
-                    cardsRenderOpponent2.push((new Card(this)).render(500, 100, cardBackObj).disableInteractive())
-                    console.log(`number of cards of the opponent2(across) ${cardsRenderOpponent2.length}`)
+                    this.cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent2.push((new Card(this)).render(500, 100, cardBackObj).disableInteractive())
+                    console.log(`number of cards of the opponent2(across) ${this.cardsRenderOpponent2.length}`)
                 }
                 if (diff === 1 || diff === -3) 
                 {
-                    cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
-                    cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
-                    cardsRenderOpponent3.push((new Card(this)).render(1150, 200, cardBackObj).disableInteractive())
-                    cardsRenderOpponent3[cardsRenderOpponent3.length-1].angle = 90
-                    console.log(`number of cards of the opponent3(right) ${cardsRenderOpponent3.length}`)
+                    this.cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent3[this.cardsRenderOpponent3.length-1].angle = 90
+                    this.cardsRenderOpponent3.push((new Card(this)).render(1150, 200, cardBackObj).disableInteractive())
+                    this.cardsRenderOpponent3[this.cardsRenderOpponent3.length-1].angle = 90
+                    console.log(`number of cards of the opponent3(right) ${this.cardsRenderOpponent3.length}`)
                 }
             }
         })
@@ -553,10 +553,10 @@ export default class gamePhase2 extends Phaser.Scene
                     console.log(`card Suit: ${tableCards[card].cardSuit} card Value: ${tableCards[card].cardValue}`);
                 }
                 for (let i = 0; i < tableCards.length; i++) {
-                    cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
+                    this.cardsRenderPlayed.push((new Card(this)).render(((this.dropZoneCenter.x - 40) + (this.dropZoneCenter.data.values.cards * 50)), this.dropZoneCenter.y, tableCards[i]).disableInteractive()) 
                     this.dropZoneCenter.data.values.cards++
                 }
-                console.log(`cardsRenderPlayed: ${cardsRenderPlayed} cardsRenderPlayed.length: ${cardsRenderPlayed.length}`)
+                console.log(`this.cardsRenderPlayed: ${this.cardsRenderPlayed} this.cardsRenderPlayed.length: ${this.cardsRenderPlayed.length}`)
                 functionExecuted = true
             }
         })
@@ -577,16 +577,16 @@ export default class gamePhase2 extends Phaser.Scene
     //     scene.zoneCenter.renderOutline(scene.dropZoneTop, 0x000000)
     // }
 
-    renderPlayerCards(cardsRender)
+    renderPlayerCards(cardsRenderFunc)
     {
-        for (let i = 0; i < cardsRender.length; i++) {
-            cardsRender[i].destroy()
+        for (let i = 0; i < cardsRenderFunc.length; i++) {
+            this.cardsRender[i].destroy()
         }
-        cardsRender.splice(0, cardsRender.length)
+        cardsRenderFunc.splice(0, cardsRenderFunc.length)
         for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
         }
-        return cardsRender
+        return cardsRenderFunc
     }
 
     renderPlayerNames()
@@ -616,6 +616,6 @@ export default class gamePhase2 extends Phaser.Scene
 
     update()
     {
-
+        
     }
 }

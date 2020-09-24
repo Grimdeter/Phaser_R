@@ -19,3 +19,5 @@ Bugs:
     -disable zone after dropping card into it (toPunish)
     -after punish event, first played card rendered twice (cardPlayedServ executed twice)
     -doesnt change scene back after second punish
+    -after punish if take is pressed both cards are taken
+    -after punish two gamePhase2 scenes are active 

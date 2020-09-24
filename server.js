@@ -230,6 +230,7 @@ io.on('connection', (socket) =>
 {
     socket.on('cardPlayed', (gameObject) =>
     {
+        console.log(`I recieved cardPlayed event from client`)
         if (tableCards.length !== 0)
         {
             console.log('last element of table cards: '+tableCards[tableCards.length-1].cardSuit + ' ' + tableCards[tableCards.length-1].cardValue)
@@ -364,7 +365,7 @@ io.on('connection', (socket) =>
             io.emit('changeSceneForToPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
             setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 4500)
             outputState()
-
+            toPunishCounter = 0
         }
     })
  

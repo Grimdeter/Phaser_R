@@ -149,12 +149,7 @@ export default class punish extends Phaser.Scene
             }
         }
 
-        let cardsRender = []
-
-        for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRender.push((new Card(this)).render(((i*100) + 600), 800, this.playerCards[i]))
-        }
-        
+        this.renderCards = this.renderPlayerCards(this.renderCards)
 
         this.input.on("dragend", (pointer, gameObject, dropped) =>
         {
@@ -220,6 +215,19 @@ export default class punish extends Phaser.Scene
                 this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
             }
         })
+    }
+
+    renderPlayerCards(cardsRenderFunc)
+    {
+        console.log(`cards render length: ${cardsRenderFunc.length}`)
+        for (let i = 0; i < cardsRenderFunc.length; i++) {
+            cardsRenderFunc[i].destroy()
+        }
+        cardsRenderFunc.splice(0, cardsRender.length)
+        for (let i = 0; i < this.playerCards.length; i++) {
+            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+        }
+        return cardsRenderFunc
     }
 
     update()

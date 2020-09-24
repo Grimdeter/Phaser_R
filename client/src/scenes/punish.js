@@ -29,20 +29,20 @@ export default class punish extends Phaser.Scene
     create()
     {
         console.log('entering punish scene: ')
-        let counter = 0
-        let renderCards = []
+        this.counter = 0
+        this.renderCards = []
 
-        renderCards = this.renderPlayerCards(renderCards)
+        this.renderCards = this.renderPlayerCards(this.renderCards)
         this.socket.on('newCardP', (cardObj) =>
         {
             this.playerCards.push(cardObj)
-            renderCards = this.renderPlayerCards(renderCards)
+            this.renderCards = this.renderPlayerCards(this.renderCards)
             for(let card in this.playerCards)
             {
                 console.log(`card Suit: ${this.playerCards[card].cardSuit} card Value: ${this.playerCards[card].cardValue}`);
             }
-            counter++
-            if (counter === 3) {
+            this.counter++
+            if (this.counter === 3) {
                 this.socket.emit('changeOfSceneForPunish')
             }
         })
@@ -64,17 +64,17 @@ export default class punish extends Phaser.Scene
         })
     }
 
-    renderPlayerCards(cardsRender)
+    renderPlayerCards(cardsRenderFunc)
     {
-        console.log(`cards render length: ${cardsRender.length}`)
-        for (let i = 0; i < cardsRender.length; i++) {
-            cardsRender[i].destroy()
+        console.log(`cards render length: ${cardsRenderFunc.length}`)
+        for (let i = 0; i < cardsRenderFunc.length; i++) {
+            cardsRenderFunc[i].destroy()
         }
-        cardsRender.splice(0, cardsRender.length)
+        cardsRenderFunc.splice(0, cardsRender.length)
         for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRender.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
         }
-        return cardsRender
+        return cardsRenderFunc
     }
 
     update()

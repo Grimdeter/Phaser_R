@@ -32,6 +32,7 @@ export default class punish extends Phaser.Scene
     {
         this.playerNum = 0
         let self = this;
+        this.changedSceneFlag = false
         // player signatures
         console.log('entering toPunish scene: ')
         
@@ -149,6 +150,36 @@ export default class punish extends Phaser.Scene
             }
         }
 
+        if(this.scene.get(`gamePhase${this.sceneNum}`).activePlayerNum !== this.scene.get(`gamePhase${this.sceneNum}`).playerNum)
+        {
+            let diff = this.scene.get(`gamePhase${this.sceneNum}`).playerNum - this.scene.get(`gamePhase${this.sceneNum}`).activePlayerNum
+            if (diff === 3 || diff === -1) 
+            {
+                // player left drop zone
+                this.zoneLeft = new Zone (this)
+                // render zone creates drop zone at (x, y, width, height)
+                this.dropZoneLeft = this.zoneLeft.renderZone(350, 425, 200, 250)
+                this.outlineLeft = this.zoneLeft.renderOutline(this.dropZoneLeft)
+            }
+            if (diff === 2 || diff === -2) 
+            {
+                // player top drop zone
+                this.zoneTop = new Zone (this)
+                // render zone creates drop zone at (x, y, width, height)
+                this.dropZoneTop = this.zoneTop.renderZone(700, 200, 200, 250)
+                this.outlineTop = this.zoneTop.renderOutline(this.dropZoneTop)
+            }
+            if (diff === 1 || diff === -3) 
+            {
+                // player right drop zone
+                this.zoneRight = new Zone (this)
+                // render zone creates drop zone at (x, y, width, height)
+                this.dropZoneRight = this.zoneRight.renderZone(1250, 425, 200, 250)
+                this.outlineRight = this.zoneRight.renderOutline(this.dropZoneRight)
+            }
+        }
+
+        this.renderCards = []
         this.renderCards = this.renderPlayerCards(this.renderCards)
 
         this.input.on("dragend", (pointer, gameObject, dropped) =>
@@ -164,13 +195,13 @@ export default class punish extends Phaser.Scene
         {
             gameObject.destroy()
             let cardObj
-            for (let i = 0; i < this.playerCards.length; i++) {
-                let toCheck = `card_${this.playerCards[i].cardValue}_${this.playerCards[i].cardSuit}`
+            for (let i = 0; i < this.scene.get(`gamePhase${this.sceneNum}`).playerCards.length; i++) {
+                let toCheck = `card_${this.scene.get(`gamePhase${this.sceneNum}`).playerCards[i].cardValue}_${this.scene.get(`gamePhase${this.sceneNum}`).playerCards[i].cardSuit}`
                 if(toCheck === gameObject.texture.key)
                 {
-                    cardObj = this.playerCards[i]
+                    cardObj = this.scene.get(`gamePhase${this.sceneNum}`).playerCards[i]
                     console.log(`cardObj ${cardObj.cardSuit} ${cardObj.cardValue}`)
-                    this.playerCards.splice(i,1)
+                    this.scene.get(`gamePhase${this.sceneNum}`).playerCards.splice(i,1)
                 }
             }
             self.socket.emit('punishCard', cardObj, this.playerNum)
@@ -206,13 +237,17 @@ export default class punish extends Phaser.Scene
             if(this.sceneNum === 1)
             {
                 console.log('start Phase1')
+                this.changedSceneFlag = true
                 this.scene.stop()
                 this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
             } else
             {
                 console.log('start Phase2')
-                this.scene.stop()
-                this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+                // this.scene.stop()
+                // this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+                this.changedSceneFlag = true
+                this.scene.sleep()
+                this.scene.wake(`gamePhase${this.sceneNum}`, {numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
             }
         })
     }
@@ -223,16 +258,16 @@ export default class punish extends Phaser.Scene
         for (let i = 0; i < cardsRenderFunc.length; i++) {
             cardsRenderFunc[i].destroy()
         }
-        cardsRenderFunc.splice(0, cardsRender.length)
-        for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+        cardsRenderFunc.splice(0, cardsRenderFunc.length)
+        for (let i = 0; i < this.scene.get(`gamePhase${this.sceneNum}`).playerCards.length; i++) {
+            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.scene.get(`gamePhase${this.sceneNum}`).playerCards[i]))
         }
         return cardsRenderFunc
     }
 
     update()
     {
-        if(this.playerCards.length === 1)
+        if(this.scene.get(`gamePhase${this.sceneNum}`).playerCards.length === 1)
         {
             if(this.sceneNum === 1)
             {
@@ -241,8 +276,16 @@ export default class punish extends Phaser.Scene
             } else
             {
                 console.log('start Phase2')
-                this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
+                this.scene.sleep()
+                this.scene.run(`gamePhase${this.sceneNum}`, {numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+                // this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
             }
+        }
+        if(this.changedSceneFlag === true)
+        {
+            // this.cardsRender = []
+            this.changedSceneFlag = false
+            this.cardsRender = this.renderPlayerCards(this.cardsRender)
         }
     }
 }

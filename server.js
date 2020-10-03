@@ -194,6 +194,8 @@ io.on('connection', (socket) =>
 
     socket.on('punishCard', (cardObj, playerNum) =>
     {
+        console.log(`i recieved punishCard (card Suit: ${cardObj.cardSuit} card Value: ${cardObj.cardValue}) event from ${playerNum}`)
+
         let player = players[playerNum];
         for(let card in player)
         {
@@ -203,7 +205,9 @@ io.on('connection', (socket) =>
             }
         }
         players[activePlayerNum].push(cardObj)
-        io.sockets.connected[players[activePlayerNum][0]].emit('newCardP', cardObj)
+
+        // io.sockets.connected[players[activePlayerNum][0]].emit('newCardP', cardObj)
+        io.to(players[activePlayerNum][0]).emit('newCardP', cardObj)
     }) 
 
     socket.on('topCardA', (card) =>
@@ -327,7 +331,8 @@ io.on('connection', (socket) =>
     //     }
     //     outputState()
     // })
-}  
+} 
+
     socket.on('takeCard', () =>
     {
         if (tableCards.length !== 0 ) {
@@ -362,16 +367,21 @@ io.on('connection', (socket) =>
     {
         toPunishCounter++
         if (toPunishCounter === players.length-1) {
+            console.log(`I am sending change of scene`)
             io.emit('changeSceneForToPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
             setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 4500)
             outputState()
             toPunishCounter = 0
+            io.emit('changeOfSceneForPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+            io.emit('numberOfCardsFromServer', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
         }
     })
  
+    //empty 
     socket.on('changeOfSceneForPunish', () =>
     {
-        io.emit('changeOfSceneForPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+        // io.emit('numberOfCardsFromServer', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+        // io.emit('changeOfSceneForPunish', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
     })
 
     socket.on('tableCards', () =>

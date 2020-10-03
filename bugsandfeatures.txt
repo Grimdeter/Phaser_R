@@ -15,9 +15,14 @@ Bugs:
     +no active player after ending the punish event
     +on the server, it changes activePlayerNum somewhere before the active to emmited after punish event
     +doesnt delete the cards whcih went into punish after punish event
+    +after punish two gamePhase2 scenes are active 
+    +he doesnt see the sceneNum after using this.scene.switch
+    +punish cards are not added to the person 
+    +num of card backs are unchanged 
+    +after punish event, first played card rendered twice (cardPlayedServ executed twice)
+    +doesnt change scene back after second punish
+    +after punish if take is pressed both cards are taken
+    +after one punish event, second punish event will nt be able to get finished, during resuming off the phase2 socket, and some other variables are lost in 2 players
     -10 cards in the hand of player is maximum
     -disable zone after dropping card into it (toPunish)
-    -after punish event, first played card rendered twice (cardPlayedServ executed twice)
-    -doesnt change scene back after second punish
-    -after punish if take is pressed both cards are taken
-    -after punish two gamePhase2 scenes are active 
+    -cards in the toPunish scene are not rendered because this.renderCards in undefined 

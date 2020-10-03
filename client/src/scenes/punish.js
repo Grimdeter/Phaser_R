@@ -28,6 +28,10 @@ export default class punish extends Phaser.Scene
 
     create()
     {
+        this.changedSceneFlag = false
+        console.log(`i entered from ${this.sceneNum}`)
+        console.log(`i entered from ${this.socket}`)
+        this.sceneToAccess = this.scene.manager.getScene(`gamePhase${this.sceneNum}`)
         console.log('entering punish scene: ')
         this.counter = 0
         this.renderCards = []
@@ -35,11 +39,13 @@ export default class punish extends Phaser.Scene
         this.renderCards = this.renderPlayerCards(this.renderCards)
         this.socket.on('newCardP', (cardObj) =>
         {
-            this.playerCards.push(cardObj)
+            this.scene.get(`gamePhase${this.sceneNum}`).playerCards.push(cardObj)
             this.renderCards = this.renderPlayerCards(this.renderCards)
-            for(let card in this.playerCards)
+            for(let card in this.scene.get(`gamePhase${this.sceneNum}`).playerCards)
             {
-                console.log(`card Suit: ${this.playerCards[card].cardSuit} card Value: ${this.playerCards[card].cardValue}`);
+                // console.log(`card Suit: ${this.playerCards[card].cardSuit} card Value: ${this.playerCards[card].cardValue}`);
+                // console.log(`playerCards in gamePhase2 card Suit: ${this.scene.get(`gamePhase2`).playerCards[card].cardSuit} card Value: ${this.scene.get(`gamePhase2`).playerCards[card].cardValue}`);
+                // console.log(`second method playerCards in gamePhase2 card Suit: ${sceneToAccess.playerCards[card].cardSuit} card Value: ${sceneToAccess.playerCards[card].cardValue}`);
             }
             this.counter++
             if (this.counter === 3) {
@@ -56,29 +62,37 @@ export default class punish extends Phaser.Scene
                 this.scene.start('gamePhase1', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
             } else
             {
+                this.changedSceneFlag = true
                 // this.socket.emit('turnOver')
                 console.log('start Phase2')
-                this.scene.stop()
-                this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+                // this.scene.stop()
+                // this.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+                this.scene.sleep()
+                // this.scene.run(`gamePhase${this.sceneNum}`, {numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+                this.scene.wake(`gamePhase${this.sceneNum}`)
             }
         })
     }
 
     renderPlayerCards(cardsRenderFunc)
     {
-        console.log(`cards render length: ${cardsRenderFunc.length}`)
         for (let i = 0; i < cardsRenderFunc.length; i++) {
             cardsRenderFunc[i].destroy()
         }
-        cardsRenderFunc.splice(0, cardsRender.length)
-        for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+        cardsRenderFunc.splice(0, cardsRenderFunc.length)
+        for (let i = 0; i < this.scene.get(`gamePhase${this.sceneNum}`).playerCards.length; i++) {
+            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.scene.get(`gamePhase${this.sceneNum}`).playerCards[i]))
         }
         return cardsRenderFunc
     }
 
     update()
     {
-        
+        if(this.changedSceneFlag === true)
+        {
+            // this.cardsRender = []
+            this.changedSceneFlag = false
+            this.cardsRender = this.renderPlayerCards(this.cardsRender)
+        }
     }
 }

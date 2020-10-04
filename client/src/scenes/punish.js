@@ -92,7 +92,7 @@ export default class punish extends Phaser.Scene
         {
             // this.cardsRender = []
             this.changedSceneFlag = false
-            this.cardsRender = this.renderPlayerCards(this.cardsRender)
+            this.renderCards = this.renderPlayerCards(this.renderCards)
         }
     }
 }

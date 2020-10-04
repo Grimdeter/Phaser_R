@@ -1,6 +1,9 @@
-Plans what to add into this project: 
-    DONT FORGET TO MAKE TOPUNISHCOUNTER = 0 AFTER IT REACHES 3
-    can try to remove the scene, and then adding it back
+Plans what to add into this project:
+    let players chose their names
     adaptive cards in the hand (the size of cards and layout will change depending on the amount of cards in the hand)
+    adaptive cards addition and deletion 
+    add main menu
+    add win screen
+    add scores system
     multiple simultanious sessions support
     import proper assests

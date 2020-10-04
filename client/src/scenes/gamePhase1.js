@@ -1,6 +1,5 @@
 import Card from '../helpers/card.js';
 import Zone from '../helpers/zone';
-import Dealer from '../helpers/dealer';
 import io from 'socket.io-client';
 
 export default class gamePhase1 extends Phaser.Scene
@@ -33,6 +32,7 @@ export default class gamePhase1 extends Phaser.Scene
                 this.load.image(`card_${cV}_${cS}`, `src/assets/img/card_${cV}_${cS}.png`)
             }
         }
+
     }
 
     create()
@@ -70,6 +70,7 @@ export default class gamePhase1 extends Phaser.Scene
         })
         this.socket.on('isPlayerA', () =>
         {
+            this.playerNum = 0
             self.isPlayerA = true
             this.readyButton = this.add.text(850, 800, ['All players are ready!']).setFontSize(18).setInteractive();
 
@@ -93,16 +94,19 @@ export default class gamePhase1 extends Phaser.Scene
         })
         this.socket.on('isPlayerB', () =>
         {
+            this.playerNum = 1
             self.isPlayerB = true
             console.log('isplayerB: ' + this.isPlayerB)
         })
         this.socket.on('isPlayerC', () =>
         {
+            this.playerNum = 3
             self.isPlayerC = true
             console.log('I am player С')
         })
         this.socket.on('isPlayerD', () =>
         {
+            this.playerNum = 4
             self.isPlayerD = true
             console.log('I am player D')
         })
@@ -300,7 +304,7 @@ export default class gamePhase1 extends Phaser.Scene
 
         this.socket.on('nextPhase', (numOfCardsA, numOfCardsB, numOfCardsC, numOfCardsD) =>
         {
-            self.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
+            self.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, playerNum:this.playerNum, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
         })
 
     }

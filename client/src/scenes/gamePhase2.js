@@ -1,6 +1,5 @@
 import Card from '../helpers/card.js';
 import Zone from '../helpers/zone';
-import io from 'socket.io-client';
 
 export default class gamePhase2 extends Phaser.Scene
 {
@@ -17,6 +16,7 @@ export default class gamePhase2 extends Phaser.Scene
         this.playerCards = data.playerCards
         this.socket = data.socket
         this.podval = data.podval
+        this.playerNum = data.playerNum
         this.isPlayerA = data.isPlayerA
         this.isPlayerB = data.isPlayerB
         this.isPlayerC = data.isPlayerC

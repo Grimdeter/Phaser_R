@@ -65,8 +65,8 @@ export default class gamePhase2 extends Phaser.Scene
                 gameObject.y = gameObject.input.dragStartY;
             }
         })
-    // drop in the create 
-{
+    
+        // drop in the create 
         this.input.on("drop", (pointer, gameObject, dropZoneCenter) =>
         {
             if (this.isActive === false)
@@ -115,7 +115,7 @@ export default class gamePhase2 extends Phaser.Scene
                 self.socket.emit('cardPlayed', cardObj)
             }
         })
-}
+
         // add render of new cards after take 
         this.socket.on('active2', () =>
         {
@@ -197,79 +197,8 @@ export default class gamePhase2 extends Phaser.Scene
             this.num2 = this.numOfCardsB
             this.num3 = this.numOfCardsC
         }
-        // render opponents card EMPTY
-{
-        // // render opponents cards anc change this.playerNum
-        // if (this.isPlayerA) 
-        // {
-        //     // render of playersCardsC 
-        //     for (let i = 0; i < this.numOfCardsC; i++) {
-        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-        //     }
-        //     // render of playersCardsB 
-        //     for (let i = 0; i < this.numOfCardsB; i++) {
-        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent1[i].angle = 90
-        //     }
-        //     // render of playersCardsD
-        //     for (let i = 0; i < this.numOfCardsD; i++) {
-        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent3[i].angle = 90
-        //     }
-        // } else if (this.isPlayerB)
-        // {
-        //     this.playerNum = 1
-        //     // render of playersCardsD
-        //     for (let i = 0; i < this.numOfCardsD; i++) {
-        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-        //     }
-        //     // render of playersCardsC
-        //     for (let i = 0; i < this.numOfCardsC; i++) {
-        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent1[i].angle = 90
-        //     }
-        //     // render of playersCardsA
-        //     for (let i = 0; i < this.numOfCardsA; i++) {
-        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent3[i].angle = 90
-        //     }
-        // } else if (this.isPlayerC)
-        // {
-        //     this.playerNum = 2
-        //     // render of playersCardsA
-        //     for (let i = 0; i < this.numOfCardsA; i++) {
-        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-        //     }
-        //     // render of playersCardsD
-        //     for (let i = 0; i < this.numOfCardsD; i++) {
-        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent1[i].angle = 90
-        //     }
-        //     // render of playersCardsB
-        //     for (let i = 0; i < this.numOfCardsB; i++) {
-        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent3[i].angle = 90
-        //     }
-        // } else if (this.isPlayerD)
-        // {
-        //     this.playerNum = 3
-        //     // render of playersCardsB
-        //     for (let i = 0; i < this.numOfCardsB; i++) {
-        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-        //     }
-        //     // render of playersCardsA
-        //     for (let i = 0; i < this.numOfCardsA; i++) {
-        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent1[i].angle = 90
-        //     }
-        //     // render of playersCardsC
-        //     for (let i = 0; i < this.numOfCardsC; i++) {
-        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-        //         this.cardsRenderOpponent3[i].angle = 90
-        //     }
-        // }
-}
-        this.renderOpponentCards(this.playerNum)
+        
+        this.renderOpponentCards()
 
         this.socket.on('cardPlayedServ', (gameObject, activePlayerNum) =>
         {
@@ -295,7 +224,7 @@ export default class gamePhase2 extends Phaser.Scene
                 }
             }
             this.activePlayerNum++
-            this.renderOpponentCards(this.playerNum)
+            this.renderOpponentCards()
         })
         let newTrumpSuit
         //discard, win, podval, selection on new trumpSuit
@@ -426,7 +355,7 @@ export default class gamePhase2 extends Phaser.Scene
                     this.num3++
                 }
             }
-            this.renderOpponentCards(this.playerNum)
+            this.renderOpponentCards()
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
                     this.socket.emit('win', this.playerNum)
@@ -699,7 +628,7 @@ export default class gamePhase2 extends Phaser.Scene
         return cardsRenderFunc
     }
 
-    renderOpponentCards(playerNumFunc)
+    renderOpponentCards()
     {
         let halfOfWidth = 700
         let halfOfHeight = 450
@@ -723,30 +652,6 @@ export default class gamePhase2 extends Phaser.Scene
             this.cardsRenderOpponent3[i].destroy()
         }
         this.cardsRenderOpponent3.splice(0, this.cardsRenderOpponent3.length)
-}
-        // set nums (number of cards in each player's hand) EMPTY
-{
-    // if (playerNumFunc === 0) 
-    // {
-    //     num1 = this.numOfCardsB
-    //     num2 = this.numOfCardsC
-    //     num3 = this.numOfCardsD
-    // } else if (playerNumFunc === 1)
-    // {
-    //     num1 = this.numOfCardsC
-    //     num2 = this.numOfCardsD
-    //     num3 = this.numOfCardsA
-    // } else if (playerNumFunc === 2)
-    // {
-    //     num1 = this.numOfCardsD
-    //     num2 = this.numOfCardsA
-    //     num3 = this.numOfCardsB
-    // } else if (playerNumFunc === 3)
-    // {
-    //     num1 = this.numOfCardsA
-    //     num2 = this.numOfCardsB
-    //     num3 = this.numOfCardsC
-    // }
 }
         // set start positions 
 {

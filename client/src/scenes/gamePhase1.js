@@ -100,13 +100,13 @@ export default class gamePhase1 extends Phaser.Scene
         })
         this.socket.on('isPlayerC', () =>
         {
-            this.playerNum = 3
+            this.playerNum = 2
             self.isPlayerC = true
             console.log('I am player С')
         })
         this.socket.on('isPlayerD', () =>
         {
-            this.playerNum = 4
+            this.playerNum = 3
             self.isPlayerD = true
             console.log('I am player D')
         })

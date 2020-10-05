@@ -39,10 +39,9 @@ export default class gamePhase2 extends Phaser.Scene
         this.changedSceneFlag = false
 
         this.isActive = false
-        this.playerNum = 0
         this.activePlayerNum = 0
 
-        let cardBackObj = new Card().setCardData(0, 0)
+        this.cardBackObj = new Card().setCardData(0, 0)
         console.log(`entered gamePhase2`)
 
         this.cardsRender = []
@@ -172,87 +171,108 @@ export default class gamePhase2 extends Phaser.Scene
             this.scene.sleep()
             this.scene.run(`toPunish`, {sceneNum: 2, activePlayerNum: activePlayerNum, socket:this.socket, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD})
         })
-
-
-        
+    
         // // render player cards
         this.cardsRender = this.renderPlayerCards(this.cardsRender)
-        console.log(`this.cardsRender.length: ${this.cardsRender.length}`)
 
-
-        // render opponents cards anc change this.playerNum
-        if (this.isPlayerA) 
+        // set nums 
+        if (this.playerNum === 0) 
         {
-            // render of playersCardsC 
-            for (let i = 0; i < this.numOfCardsC; i++) {
-                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-            }
-            // render of playersCardsB 
-            for (let i = 0; i < this.numOfCardsB; i++) {
-                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent1[i].angle = 90
-            }
-            // render of playersCardsD
-            for (let i = 0; i < this.numOfCardsD; i++) {
-                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent3[i].angle = 90
-            }
-        } else if (this.isPlayerB)
+            this.num1 = this.numOfCardsB
+            this.num2 = this.numOfCardsC
+            this.num3 = this.numOfCardsD
+        } else if (this.playerNum === 1)
         {
-            this.playerNum = 1
-            // render of playersCardsD
-            for (let i = 0; i < this.numOfCardsD; i++) {
-                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-            }
-            // render of playersCardsC
-            for (let i = 0; i < this.numOfCardsC; i++) {
-                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent1[i].angle = 90
-            }
-            // render of playersCardsA
-            for (let i = 0; i < this.numOfCardsA; i++) {
-                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent3[i].angle = 90
-            }
-        } else if (this.isPlayerC)
+            this.num1 = this.numOfCardsC
+            this.num2 = this.numOfCardsD
+            this.num3 = this.numOfCardsA
+        } else if (this.playerNum === 2)
         {
-            this.playerNum = 2
-            // render of playersCardsA
-            for (let i = 0; i < this.numOfCardsA; i++) {
-                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-            }
-            // render of playersCardsD
-            for (let i = 0; i < this.numOfCardsD; i++) {
-                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent1[i].angle = 90
-            }
-            // render of playersCardsB
-            for (let i = 0; i < this.numOfCardsB; i++) {
-                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent3[i].angle = 90
-            }
-        } else if (this.isPlayerD)
+            this.num1 = this.numOfCardsD
+            this.num2 = this.numOfCardsA
+            this.num3 = this.numOfCardsB
+        } else if (this.playerNum === 3)
         {
-            this.playerNum = 3
-            // render of playersCardsB
-            for (let i = 0; i < this.numOfCardsB; i++) {
-                this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
-            }
-            // render of playersCardsA
-            for (let i = 0; i < this.numOfCardsA; i++) {
-                this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent1[i].angle = 90
-            }
-            // render of playersCardsC
-            for (let i = 0; i < this.numOfCardsC; i++) {
-                this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
-                this.cardsRenderOpponent3[i].angle = 90
-            }
+            this.num1 = this.numOfCardsA
+            this.num2 = this.numOfCardsB
+            this.num3 = this.numOfCardsC
         }
+        // render opponents card EMPTY
+{
+        // // render opponents cards anc change this.playerNum
+        // if (this.isPlayerA) 
+        // {
+        //     // render of playersCardsC 
+        //     for (let i = 0; i < this.numOfCardsC; i++) {
+        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+        //     }
+        //     // render of playersCardsB 
+        //     for (let i = 0; i < this.numOfCardsB; i++) {
+        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent1[i].angle = 90
+        //     }
+        //     // render of playersCardsD
+        //     for (let i = 0; i < this.numOfCardsD; i++) {
+        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent3[i].angle = 90
+        //     }
+        // } else if (this.isPlayerB)
+        // {
+        //     this.playerNum = 1
+        //     // render of playersCardsD
+        //     for (let i = 0; i < this.numOfCardsD; i++) {
+        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+        //     }
+        //     // render of playersCardsC
+        //     for (let i = 0; i < this.numOfCardsC; i++) {
+        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent1[i].angle = 90
+        //     }
+        //     // render of playersCardsA
+        //     for (let i = 0; i < this.numOfCardsA; i++) {
+        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent3[i].angle = 90
+        //     }
+        // } else if (this.isPlayerC)
+        // {
+        //     this.playerNum = 2
+        //     // render of playersCardsA
+        //     for (let i = 0; i < this.numOfCardsA; i++) {
+        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+        //     }
+        //     // render of playersCardsD
+        //     for (let i = 0; i < this.numOfCardsD; i++) {
+        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent1[i].angle = 90
+        //     }
+        //     // render of playersCardsB
+        //     for (let i = 0; i < this.numOfCardsB; i++) {
+        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent3[i].angle = 90
+        //     }
+        // } else if (this.isPlayerD)
+        // {
+        //     this.playerNum = 3
+        //     // render of playersCardsB
+        //     for (let i = 0; i < this.numOfCardsB; i++) {
+        //         this.cardsRenderOpponent2.push((new Card(this)).render(((i*100) + 500), 100, cardBackObj).disableInteractive())
+        //     }
+        //     // render of playersCardsA
+        //     for (let i = 0; i < this.numOfCardsA; i++) {
+        //         this.cardsRenderOpponent1.push((new Card(this)).render(150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent1[i].angle = 90
+        //     }
+        //     // render of playersCardsC
+        //     for (let i = 0; i < this.numOfCardsC; i++) {
+        //         this.cardsRenderOpponent3.push((new Card(this)).render(1150, (200 + (i * 100)), cardBackObj).disableInteractive())
+        //         this.cardsRenderOpponent3[i].angle = 90
+        //     }
+        // }
+}
+        this.renderOpponentCards(this.playerNum)
 
         this.socket.on('cardPlayedServ', (gameObject, activePlayerNum) =>
         {
-            this.activePlayerNum++
             console.log('cardPlayedServ')
             this.cardsTableObj.push(gameObject)
             this.dropZoneCenter.data.values.cards++
@@ -261,23 +281,21 @@ export default class gamePhase2 extends Phaser.Scene
             if(activePlayerNum !== this.playerNum)
             {
                 let diff = this.playerNum - activePlayerNum
-                console.log('diff: ' + diff)
                 if (diff === 3 || diff === -1) 
                 {
-                    let toDestroy = this.cardsRenderOpponent1.pop()
-                    toDestroy.destroy()
+                    this.num1 = this.num1 - 1
                 }
                 if (diff === 2 || diff === -2) 
                 {
-                    let toDestroy = this.cardsRenderOpponent2.pop()
-                    toDestroy.destroy()
+                    this.num2 = this.num2 - 1
                 }
                 if (diff === 1 || diff === -3) 
                 {
-                    let toDestroy = this.cardsRenderOpponent3.pop()
-                    toDestroy.destroy()
+                    this.num3 = this.num3 - 1
                 }
             }
+            this.activePlayerNum++
+            this.renderOpponentCards(this.playerNum)
         })
         let newTrumpSuit
         //discard, win, podval, selection on new trumpSuit
@@ -397,19 +415,18 @@ export default class gamePhase2 extends Phaser.Scene
                 let diff = this.playerNum - activePlayerNum
                 if (diff === 3 || diff === -1) 
                 {
-                    this.cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent1[this.cardsRenderOpponent1.length-1].angle = 90
+                    this.num1++
                 }
                 if (diff === 2 || diff === -2) 
                 {
-                    this.cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
+                    this.num2++
                 }
                 if (diff === 1 || diff === -3) 
                 {
-                    this.cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent3[this.cardsRenderOpponent3.length-1].angle = 90
+                    this.num3++
                 }
             }
+            this.renderOpponentCards(this.playerNum)
             if (this.playerCards.length === 0) {
                 if (this.podval.length === 0) {
                     this.socket.emit('win', this.playerNum)
@@ -519,27 +536,18 @@ export default class gamePhase2 extends Phaser.Scene
                 let diff = this.playerNum - playerNum
                 if (diff === 3 || diff === -1) 
                 {
-                    this.cardsRenderOpponent1.push((new Card(this)).render(150, 100, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent1[this.cardsRenderOpponent1.length-1].angle = 90
-                    this.cardsRenderOpponent1.push((new Card(this)).render(150, 200, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent1[this.cardsRenderOpponent1.length-1].angle = 90
-                    console.log(`number of cards of the opponent1(left) ${this.cardsRenderOpponent1.length}`)
+                    this.num1 = 2 
                 }
                 if (diff === 2 || diff === -2) 
                 {
-                    this.cardsRenderOpponent2.push((new Card(this)).render(400, 100, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent2.push((new Card(this)).render(500, 100, cardBackObj).disableInteractive())
-                    console.log(`number of cards of the opponent2(across) ${this.cardsRenderOpponent2.length}`)
+                    this.num2 = 2
                 }
                 if (diff === 1 || diff === -3) 
                 {
-                    this.cardsRenderOpponent3.push((new Card(this)).render(1150, 100, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent3[this.cardsRenderOpponent3.length-1].angle = 90
-                    this.cardsRenderOpponent3.push((new Card(this)).render(1150, 200, cardBackObj).disableInteractive())
-                    this.cardsRenderOpponent3[this.cardsRenderOpponent3.length-1].angle = 90
-                    console.log(`number of cards of the opponent3(right) ${this.cardsRenderOpponent3.length}`)
+                    this.num3 = 2
                 }
             }
+            this.renderOpponentCards(this.playerNum)
         })
         
         this.socket.emit('tableCards')
@@ -671,14 +679,115 @@ export default class gamePhase2 extends Phaser.Scene
 
     renderPlayerCards(cardsRenderFunc)
     {
+        let distanceBetweenCards = 100
+        let halfOfWidth = 700
+        let startPos = 500
         for (let i = 0; i < cardsRenderFunc.length; i++) {
-            this.cardsRender[i].destroy()
+            cardsRenderFunc[i].destroy()
         }
         cardsRenderFunc.splice(0, cardsRenderFunc.length)
+        if (this.playerCards.length % 2 === 0) 
+        {
+            startPos = (halfOfWidth - distanceBetweenCards*this.playerCards.length/2) + 25
+        } else
+        {
+            startPos = (halfOfWidth - distanceBetweenCards*(this.playerCards.length-1)/2) - 25
+        }
         for (let i = 0; i < this.playerCards.length; i++) {
-            cardsRenderFunc.push((new Card(this)).render(((i*100) + 500), 800, this.playerCards[i]))
+            cardsRenderFunc.push((new Card(this)).render(((i*distanceBetweenCards) + startPos), 800, this.playerCards[i]))
         }
         return cardsRenderFunc
+    }
+
+    renderOpponentCards(playerNumFunc)
+    {
+        let halfOfWidth = 700
+        let halfOfHeight = 450
+        let distanceBetweenCards = 100
+        let startPos1 = 500
+        let startPos2 = 500
+        let startPos3 = 500
+        //destroy and splice the existing card backs
+{
+        for (let i = 0; i < this.cardsRenderOpponent2.length; i++) {
+            this.cardsRenderOpponent2[i].destroy()
+        }
+        this.cardsRenderOpponent2.splice(0, this.cardsRenderOpponent2.length)
+
+        for (let i = 0; i < this.cardsRenderOpponent1.length; i++) {
+            this.cardsRenderOpponent1[i].destroy()
+        }
+        this.cardsRenderOpponent1.splice(0, this.cardsRenderOpponent1.length)
+
+        for (let i = 0; i < this.cardsRenderOpponent3.length; i++) {
+            this.cardsRenderOpponent3[i].destroy()
+        }
+        this.cardsRenderOpponent3.splice(0, this.cardsRenderOpponent3.length)
+}
+        // set nums (number of cards in each player's hand) EMPTY
+{
+    // if (playerNumFunc === 0) 
+    // {
+    //     num1 = this.numOfCardsB
+    //     num2 = this.numOfCardsC
+    //     num3 = this.numOfCardsD
+    // } else if (playerNumFunc === 1)
+    // {
+    //     num1 = this.numOfCardsC
+    //     num2 = this.numOfCardsD
+    //     num3 = this.numOfCardsA
+    // } else if (playerNumFunc === 2)
+    // {
+    //     num1 = this.numOfCardsD
+    //     num2 = this.numOfCardsA
+    //     num3 = this.numOfCardsB
+    // } else if (playerNumFunc === 3)
+    // {
+    //     num1 = this.numOfCardsA
+    //     num2 = this.numOfCardsB
+    //     num3 = this.numOfCardsC
+    // }
+}
+        // set start positions 
+{
+        // set startPos2 
+        if (this.num2 % 2 === 0) {
+            startPos2 = (halfOfWidth - distanceBetweenCards*this.num2/2) + 25
+        } else
+        {
+            startPos2 = (halfOfWidth - distanceBetweenCards*(this.num2-1)/2) - 25
+        }
+
+        // set startPos1 
+        if (this.num1 % 2 === 0) {
+            startPos1 = (halfOfHeight - distanceBetweenCards*this.num1/2) + 25
+        } else
+        {
+            startPos1 = (halfOfHeight - distanceBetweenCards*(this.num1-1)/2) - 25
+        }
+
+        // set startPos3 
+        if (this.num3 % 2 === 0) {
+            startPos3 = (halfOfHeight - distanceBetweenCards*this.num3/2) + 25
+        } else
+        {
+            startPos3 = (halfOfHeight - distanceBetweenCards*(this.num3-1)/2) - 25
+        }
+}
+        //render card backs
+{
+        for (let i = 0; i < this.num2; i++) {
+            this.cardsRenderOpponent2.push((new Card(this)).render(((i*distanceBetweenCards) + startPos2), 100, this.cardBackObj).disableInteractive())
+        }
+        for (let i = 0; i < this.num1; i++) {
+            this.cardsRenderOpponent1.push((new Card(this)).render(150, (startPos1 + (i * distanceBetweenCards)), this.cardBackObj).disableInteractive())
+            this.cardsRenderOpponent1[i].angle = 90
+        }
+        for (let i = 0; i < this.num3; i++) {
+            this.cardsRenderOpponent3.push((new Card(this)).render(1150, (startPos3 + (i * distanceBetweenCards)), this.cardBackObj).disableInteractive())
+            this.cardsRenderOpponent3[i].angle = 90
+        }
+}
     }
 
     renderPlayerNames()

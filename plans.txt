@@ -1,9 +1,10 @@
 Plans what to add into this project:
+    +import proper assests
+    +adaptive cards in the hand (the size of cards and layout will change depending on the amount of cards in the hand)
     let players chose their names
-    adaptive cards in the hand (the size of cards and layout will change depending on the amount of cards in the hand)
-    adaptive cards addition and deletion 
+    adaptive cards addition and deletion of opponents
     add main menu
     add win screen
     add scores system
     multiple simultanious sessions support
-    import proper assests
+    change the color of the take button 

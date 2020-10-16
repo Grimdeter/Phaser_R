@@ -29,7 +29,7 @@ export default class gamePhase1 extends Phaser.Scene
     	{
     		for (let cV = 6; cV < 15; cV++) 
     		{
-                this.load.image(`card_${cV}_${cS}`, `src/assets/img/card_${cV}_${cS}.png`)
+                this.load.image(`card_${cV}_${cS}`, `../src/assets/img/card_${cV}_${cS}.png`)
             }
         }
 
@@ -37,6 +37,13 @@ export default class gamePhase1 extends Phaser.Scene
 
     create()
     {
+        //                http://localhost:3000 if local, 5000 for local heroku
+        this.socket = io(`http://localhost:3000`)
+        this.playerName = localStorage.getItem(`name`)
+        this.roomID = localStorage.getItem(`roomID`)
+        this.socket.emit(`roomToConnect`, this.roomID, this.playerName)
+        // this.socket = io.connect() this was working on the deploy
+        // this.socket = io.connect(window.location.hostname)
         window.myScene1 = this
         let self = this;
         // player signatures
@@ -58,63 +65,98 @@ export default class gamePhase1 extends Phaser.Scene
 
         this.isActive = false;
     
-        //                http://localhost:3000 if local, 5000 for local heroku
-        this.socket = io('http://localhost:3000')
-        // this.socket = io.connect() this was working on the deploy
-        // this.socket = io.connect(window.location.hostname)
+        // OLD VERSION, WHERE THIS WAS THE FIRST SCENE
+        // //                http://localhost:3000 if local, 5000 for local heroku
+        // this.socket = io('http://localhost:3000')
+        // // this.socket = io.connect() this was working on the deploy
+        // // this.socket = io.connect(window.location.hostname)
 
-        // tells the client which player is which 
+        // // tells the client which player is which 
         this.socket.on('connect', () =>
         {
             console.log('connected')
         })
-        this.socket.on('isPlayerA', () =>
-        {
-            this.playerNum = 0
-            self.isPlayerA = true
-            this.readyButton = this.add.text(850, 800, ['All players are ready!']).setFontSize(18).setInteractive();
+        // OLD PLAYERS KNOWING WHO THEY ARE EMPTY
 
-            this.readyButton.on('pointerdown', () =>
-            {
-                self.socket.emit('playersReady')
-                this.readyButton.disableInteractive()
-                this.readyButton.destroy()
-            })
+{
+    // this.socket.on('isPlayerA', () =>
+    // {
+    //     this.playerNum = 0
+    //     self.isPlayerA = true
+    //     this.readyButton = this.add.text(850, 800, ['All players are ready!']).setFontSize(18).setInteractive();
 
-            this.readyButton.on('pointerover', () =>
-            {
-                self.readyButton.setColor('#ff69b4')
-            })
+    //     this.readyButton.on('pointerdown', () =>
+    //     {
+    //         self.socket.emit('playersReady')
+    //         this.readyButton.disableInteractive()
+    //         this.readyButton.destroy()
+    //     })
 
-            this.readyButton.on('pointerout', () =>
+    //     this.readyButton.on('pointerover', () =>
+    //     {
+    //         self.readyButton.setColor('#ff69b4')
+    //     })
+
+    //     this.readyButton.on('pointerout', () =>
+    //     {
+    //         self.readyButton.setColor('#ffffff')
+    //     })
+    //     console.log('I am player A')
+    // })
+    // this.socket.on('isPlayerB', () =>
+    // {
+    //     this.playerNum = 1
+    //     self.isPlayerB = true
+    //     console.log('isplayerB: ' + this.isPlayerB)
+    // })
+    // this.socket.on('isPlayerC', () =>
+    // {
+    //     this.playerNum = 2
+    //     self.isPlayerC = true
+    //     console.log('I am player С')
+    // })
+    // this.socket.on('isPlayerD', () =>
+    // {
+    //     this.playerNum = 3
+    //     self.isPlayerD = true
+    //     console.log('I am player D')
+    // })
+    // this.socket.on('isSpectator', () =>
+    // {
+    //     self.isSpectator = true
+    //     console.log('I am Spectator')
+    // })
+
+}
+        this.socket.emit(`tellMePlayerNum`)
+        this.socket.on('isPlayer', (playerNum) =>
+        {
+            this.playerNum = playerNum
+            console.log(`i am player ${playerNum}`)
+
+            if (this.playerNum === 0)
             {
-                self.readyButton.setColor('#ffffff')
-            })
-            console.log('I am player A')
+                this.readyButton = this.add.text(850, 800, ['All players are ready!']).setFontSize(18).setInteractive();
+    
+                this.readyButton.on('pointerdown', () =>
+                {
+                    self.socket.emit('playersReady')
+                    this.readyButton.disableInteractive()
+                    this.readyButton.destroy()
+                })
+        
+                this.readyButton.on('pointerover', () =>
+                {
+                    self.readyButton.setColor('#ff69b4')
+                })
+        
+                this.readyButton.on('pointerout', () =>
+                {
+                    self.readyButton.setColor('#ffffff')
+                })
+            }
         })
-        this.socket.on('isPlayerB', () =>
-        {
-            this.playerNum = 1
-            self.isPlayerB = true
-            console.log('isplayerB: ' + this.isPlayerB)
-        })
-        this.socket.on('isPlayerC', () =>
-        {
-            this.playerNum = 2
-            self.isPlayerC = true
-            console.log('I am player С')
-        })
-        this.socket.on('isPlayerD', () =>
-        {
-            this.playerNum = 3
-            self.isPlayerD = true
-            console.log('I am player D')
-        })
-        this.socket.on('isSpectator', () =>
-        {
-            self.isSpectator = true
-            console.log('I am Spectator')
-        })
+  
         this.socket.on('active', () =>
         {
             this.createDropZones(this)
@@ -142,7 +184,6 @@ export default class gamePhase1 extends Phaser.Scene
             self.isActive = true;
         })
 
-        // possible point of failure, gameObject
         this.socket.on('podvalCards', (card) =>
         {
             this.podval.push(card)
@@ -215,7 +256,7 @@ export default class gamePhase1 extends Phaser.Scene
             gameObject.y = dragY;
         })
 
-        this.socket.on('topCardA', (card) =>
+        this.socket.on('topCard0', (card) =>
         {
             if (self.isPlayerA === true) {
                 let cardRender = new Card(this)
@@ -234,7 +275,7 @@ export default class gamePhase1 extends Phaser.Scene
                 cardRender.render(150, 425, card).disableInteractive()
             }
         })
-        this.socket.on('topCardB', (card) =>
+        this.socket.on('topCard1', (card) =>
         {
             if (self.isPlayerB === true) {
                 let cardRender = new Card(this)
@@ -253,7 +294,7 @@ export default class gamePhase1 extends Phaser.Scene
                 cardRender.render(150, 425, card).disableInteractive()
             }
         })
-        this.socket.on('topCardC', (card) =>
+        this.socket.on('topCard2', (card) =>
         {
             if (self.isPlayerC === true) {
                 let cardRender = new Card(this)
@@ -272,7 +313,7 @@ export default class gamePhase1 extends Phaser.Scene
                 cardRender.render(150, 425, card).disableInteractive()
             }
         })
-        this.socket.on('topCardD', (card) =>
+        this.socket.on('topCard3', (card) =>
         {
             if (self.isPlayerD === true) {
                 let cardRender = new Card(this)
@@ -307,6 +348,7 @@ export default class gamePhase1 extends Phaser.Scene
             self.scene.start('gamePhase2', {playerCards:this.playerCards, socket:this.socket, podval:this.podval, playerNum:this.playerNum, isPlayerA: this.isPlayerA, isPlayerB: this.isPlayerB, isPlayerC: this.isPlayerC, isPlayerD: this.isPlayerD, numOfCardsA: numOfCardsA, numOfCardsB: numOfCardsB, numOfCardsC: numOfCardsC, numOfCardsD: numOfCardsD})
         })
 
+        this.add.text(650, 650, [this.playerName]).setFontSize(18);
     }
 
     createDropZones(scene)
@@ -363,22 +405,18 @@ export default class gamePhase1 extends Phaser.Scene
     update()
     {
         if (this.isPlayerA) {
-            this.add.text(650, 650, ['Player A']).setFontSize(18);
             this.add.text(250, 400, ['Player B']).setFontSize(18);
             this.add.text(650, 250, ['Player C']).setFontSize(18);
             this.add.text(1020, 400, ['Player D']).setFontSize(18);
         } else if (this.isPlayerB) {
-            this.add.text(650, 650, ['Player B']).setFontSize(18);
             this.add.text(1020, 400, ['Player A']).setFontSize(18);
             this.add.text(250, 400, ['Player C']).setFontSize(18);
             this.add.text(650, 250, ['Player D']).setFontSize(18);
         } else if (this.isPlayerC) {
-            this.add.text(650, 650, ['Player С']).setFontSize(18);
             this.add.text(250, 400, ['Player D']).setFontSize(18);
             this.add.text(650, 250, ['Player A']).setFontSize(18);
             this.add.text(1020, 400, ['Player B']).setFontSize(18);
         } else if (this.isPlayerD) {
-            this.add.text(650, 650, ['Player D']).setFontSize(18);
             this.add.text(250, 400, ['Player A']).setFontSize(18);
             this.add.text(650, 250, ['Player B']).setFontSize(18);
             this.add.text(1020, 400, ['Player C']).setFontSize(18);

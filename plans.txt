@@ -1,6 +1,10 @@
 Plans what to add into this project:
     +import proper assests
     +adaptive cards in the hand (the size of cards and layout will change depending on the amount of cards in the hand)
+    implement players as objects
+    implement rooms as class
+    make every player know their room
+    implement players ready
     let players chose their names
     adaptive cards addition and deletion of opponents
     add main menu

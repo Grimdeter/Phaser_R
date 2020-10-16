@@ -1,10 +1,13 @@
 let PORT = process.env.PORT || 3000
-const express = require('express')
+const express = require('express');
+const { Player } = require('./player');
 const server = express();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
+let rooms = []
 let Deck = require('./deckServ').Deck
 let players = []
+let playersNEW = []
 let spectators = []
 let deck 
 let activePlayerNum = 0;
@@ -20,41 +23,47 @@ let toPunishCounter = 0
 //     res.sendFile(__dirname + '/client/dist/index.html');
 // });
 
+server.use(express.static(__dirname + ''))
+
+server.get('/',function(req,res){
+    res.sendFile(__dirname + '/greetings/index.html');
+});
+
 io.on('connection', (socket) =>
 {
-    console.log('user connected: ' + socket.id);
-
-    // creates shuffled deck
-    deck = new Deck()
-
-    players[players.length] = new Array();
-    players[players.length - 1].push(socket.id)
-    console.log('user is pushed into players, players.lenght: ' + players.length)
-
-
-    if (players.length === 1) {
-        console.log('num of players: ' + players.length)
-        console.log('players array: ' + players)
-        socket.emit('isPlayerA');
-    } else if (players.length === 2)
+    socket.on(`roomToConnect`, (roomID, name) =>
     {
-        console.log('num of players: ' + players.length)
-        console.log('players array: ' + players)
-        socket.emit('isPlayerB');
-        io.emit('NumPlayers2')
-    } else if (players.length === 3)
+        for (let i = 0; i < rooms.length; i++) {
+            if (rooms[i].roomID === roomID) 
+            {
+                socket.join(`room${roomID}`)
+                rooms[i].players.push(new Player(socket.id))
+                rooms[i].players[players.length-1].name = name
+                io.to(`room${roomID}`).emit('newPlayerName', players.length-1)
+            } else if(rooms.length === 0)
+            {
+                socket.join(`room${roomID}`)
+                rooms.push(new Room(roomID))
+                rooms[i].players.push(new Player(socket.id))
+                rooms[i].players[players.length-1].name = name
+                io.to(`room${roomID}`).emit('newPlayerName', players.length-1)
+            } else if(i === rooms.length-1)
+            {
+                socket.join(`room${roomID}`)
+                rooms[roomID].push(new Room(roomID))
+                rooms[roomID].players.push(new Player(socket.id))
+                rooms[roomID].players[players.length-1].name = name
+                io.to(`room${roomID}`).emit('newPlayerName', players.length-1)
+            }
+        }
+    })
+
+    socket.on(`tellMePlayerNum`, (roomID) =>
     {
-        console.log('num of players: ' + players.length)
-        console.log('players array: ' + players)
-        io.emit('NumPlayers3')
-        socket.emit('isPlayerC');
-    } else if (players.length === 4)
-    {
-        console.log('num of players: ' + players.length)
-        console.log('players array: ' + players)
-        io.emit('NumPlayers4')
-        socket.emit('isPlayerD');
-    } 
+        io.to(`room${roomID}`).emit('isPlayer', rooms[roomID].players.length-1)
+    })
+
+
     // else 
     // {
     //     spectators.push(players[4][0])
@@ -81,32 +90,30 @@ io.on('connection', (socket) =>
 }
 
     // testing playersReady, which skips directly into phase2
-    socket.on('playersReady', () =>
+    socket.on('playersReady', (roomID) =>
     {
-        for (let i = 0 ; i < players.length; i++) {
-            console.log("socket id of player: " + players[i])
-            io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
-            deck.pop()
-            io.sockets.connected[players[i][0]].emit('podvalCards', deck[deck.length - 1])
-            deck.pop()
+        for (let i = 0 ; i < rooms[roomID].players.length; i++) {
+            console.log("socket id of player: " + rooms[roomID].players[i])
+            io.sockets.connected[rooms[roomID].players[i][0]].emit('podvalCards', rooms[roomID].deck[rooms[roomID].deck.length - 1])
+            rooms[roomID].deck.pop()
+            io.sockets.connected[rooms[roomID].players[i][0]].emit('podvalCards', rooms[roomID].deck[rooms[roomID].deck.length - 1])
+            rooms[roomID].deck.pop()
             for (let j = 0; j < 7; j++) {
-                io.sockets.connected[players[i][0]].emit('newCard', deck[deck.length - 1])
-                players[i].push(deck[deck.length - 1])
-                deck.pop()
+                io.sockets.connected[rooms[roomID].players[i][0]].emit('newCard', rooms[roomID].deck[rooms[roomID].deck.length - 1])
+                rooms[roomID].players[i].push(rooms[roomID].deck[rooms[roomID].deck.length - 1])
+                rooms[roomID].deck.pop()
             }
         }
-
-
-        io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
-        outputPlayersArray(players)
-        setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 4500)
+        io.to(`room${roomID}`).emit('nextPhase', rooms[roomID].players[0].length - 1, rooms[roomID].players[1].length - 1, rooms[roomID].players[2].length - 1,rooms[roomID].players[3].length - 1)
+        outputPlayersArray(rooms[roomID].players)
+        setTimeout(() => {io.sockets.connected[rooms[roomID].players[rooms[roomID].activePlayerNum].id].emit('active2')}, 4500)
     })
 
-    socket.on('turnOver', () =>
+    socket.on('turnOver', (roomID) =>
     {
-        oldActivePlayerNum = activePlayerNum
-        activePlayerNum = (activePlayerNum+1)%players.length
-        io.sockets.connected[players[activePlayerNum][0]].emit('active')
+        rooms[roomID].oldActivePlayerNum = rooms[roomID].activePlayerNum
+        rooms[roomID].activePlayerNum = (rooms[roomID].activePlayerNum+1)%rooms[roomID].players.length
+        io.sockets.connected[rooms[roomID].players[rooms[roomID].activePlayerNum].id].emit('active')
     })
 
     socket.on('cardDraggedInto', (x, y, gameObject) =>
@@ -119,7 +126,7 @@ io.on('connection', (socket) =>
           
         if (x === 150)
         {
-            console.log('card value of the top card of destination (left): ' + (players[(activePlayerNum + 1) % 4][(players[(activePlayerNum + 1) % 4].length) - 1].cardValue))
+            console.log('card value of the top card of destination (left): ' + (players[(activePlayerNum + 1) % 4].cards[players[(activePlayerNum + 1) % 4].cards.length].cardValue))
             if (players[(activePlayerNum + 1) % 4].length !== 1 )
             {
                 let diff = ((players[(activePlayerNum + 1) % 4][(players[(activePlayerNum + 1 ) % 4].length) - 1].cardValue)  - gameObject.cardValue)
@@ -133,48 +140,48 @@ io.on('connection', (socket) =>
                 }
             }
             players[(activePlayerNum + 1) % 4].push(gameObject)
-            io.sockets.connected[players[(activePlayerNum + 1) % 4][0]].emit('newCard', gameObject)
+            io.sockets.connected[players[(activePlayerNum + 1) % 4].id].emit('newCard', gameObject)
         } else if (x === 700 && y !== 800)
         {
-            console.log('card value of the top card of destination (across): ' + (players[(activePlayerNum + 2) % 4][(players[(activePlayerNum + 2 ) % 4].length) - 1].cardValue))
+            console.log('card value of the top card of destination (left): ' + (players[(activePlayerNum + 2) % 4].cards[players[(activePlayerNum + 2) % 4].cards.length].cardValue))
             
             if (players[(activePlayerNum + 2) % 4].length !== 1 )
             {
-                let diff = ((players[(activePlayerNum + 2) % 4][(players[(activePlayerNum + 2 ) % 4].length) - 1].cardValue)  - gameObject.cardValue)
+                let diff = ((players[(activePlayerNum + 2) % 4].cards[players[(activePlayerNum + 2) % 4].cards.length - 1].cardValue)  - gameObject.cardValue)
                 console.log('difference between top card and gameOjbject: ' + diff)
                 if (diff !== -1 ) {
                     if (diff !== 8) {
                         console.log('Punish: ' + activePlayerNum)
-                        io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+                        io.sockets.connected[players[activePlayerNum].id].emit('punish')
                         socket.broadcast.emit(`toPunish`, activePlayerNum)
                     }
                     
                 }
             }
-            players[(activePlayerNum + 2) % 4].push(gameObject)
-            io.sockets.connected[players[(activePlayerNum + 2) % 4][0]].emit('newCard', gameObject)
+            players[(activePlayerNum + 2) % 4].cards.push(gameObject)
+            io.sockets.connected[players[(activePlayerNum + 2) % 4].id].emit('newCard', gameObject)
         } else if (x === 1250)
         {
-            console.log('card value of the top card of destination (right): ' + (players[(activePlayerNum + 3) % 4][(players[(activePlayerNum + 3 ) % 4].length) - 1].cardValue))
-            if (players[(activePlayerNum + 3) % 4].length !== 1 )
+            console.log('card value of the top card of destination (right): ' + (players[(activePlayerNum + 3) % 4].cards[(players[(activePlayerNum + 3 ) % 4].cards.length) - 1].cardValue))
+            if (players[(activePlayerNum + 3) % 4].cards.length !== 1 )
             {
-                let diff = ((players[(activePlayerNum + 3) % 4][(players[(activePlayerNum + 3 ) % 4].length) - 1].cardValue)  - gameObject.cardValue)
+                let diff = ((players[(activePlayerNum + 3) % 4].cards[(players[(activePlayerNum + 3 ) % 4].cards.length) - 1].cardValue)  - gameObject.cardValue)
                 console.log('difference between top card and gameOjbject: ' + diff)
                 if (diff !== -1 ) {
                     if (diff !== 8) {
                         console.log('Punish: ' + activePlayerNum)
-                        io.sockets.connected[players[activePlayerNum][0]].emit('punish')
+                        io.sockets.connected[players[activePlayerNum].id].emit('punish')
                         socket.broadcast.emit(`toPunish`, activePlayerNum)
                     }
                 }
             }
             players[(activePlayerNum + 3) % 4].push(gameObject)
-            io.sockets.connected[players[(activePlayerNum + 3) % 4][0]].emit('newCard', gameObject)
+            io.sockets.connected[players[(activePlayerNum + 3) % 4].id].emit('newCard', gameObject)
         } else
         {
-            console.log('card value of the top card of destination (self): ' + (players[(activePlayerNum) % 4][(players[(activePlayerNum ) % 4].length) - 1].cardValue))
-            players[(activePlayerNum)].push(gameObject)
-            io.sockets.connected[players[activePlayerNum][0]].emit('newCard', gameObject)
+            console.log('card value of the top card of destination (self): ' + (players[(activePlayerNum) % 4].cards[(players[(activePlayerNum ) % 4].cards.length) - 1].cardValue))
+            players[(activePlayerNum)].cards.push(gameObject)
+            io.sockets.connected[players[activePlayerNum].id].emit('newCard', gameObject)
         }
 
         deck.pop()
@@ -182,10 +189,10 @@ io.on('connection', (socket) =>
         io.emit('destroyDeckCard')
         if (deck.length === 0) {
             activePlayerNum = (activePlayerNum+1)%4
-            io.emit('nextPhase', players[0].length - 1, players[1].length - 1, players[2].length - 1,players[3].length - 1)
+            io.emit('nextPhase', players[0].cards.length , players[1].cards.length , players[2].cards.length ,players[3].cards.length)
             outputPlayersArray(players)
-            io.sockets.connected[players[activePlayerNum][0]].emit('active')
-            setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active')}, 4500)
+            io.sockets.connected[players[activePlayerNum].id].emit('active')
+            setTimeout(() => {io.sockets.connected[players[activePlayerNum].id].emit('active')}, 4500)
         } else
         {
             io.emit('deckCard', deck[deck.length - 1])
@@ -196,7 +203,7 @@ io.on('connection', (socket) =>
     {
         console.log(`i recieved punishCard (card Suit: ${cardObj.cardSuit} card Value: ${cardObj.cardValue}) event from ${playerNum}`)
 
-        let player = players[playerNum];
+        let player = players[playerNum].cards;
         for(let card in player)
         {
             if (player[card].cardSuit === cardObj.cardSuit && player[card].cardValue === cardObj.cardValue) 
@@ -204,28 +211,28 @@ io.on('connection', (socket) =>
                 players[playerNum].splice(card, 1)
             }
         }
-        players[activePlayerNum].push(cardObj)
+        players[activePlayerNum].cards.push(cardObj)
 
         // io.sockets.connected[players[activePlayerNum][0]].emit('newCardP', cardObj)
-        io.to(players[activePlayerNum][0]).emit('newCardP', cardObj)
+        io.to(players[activePlayerNum].id).emit('newCardP', cardObj)
     }) 
 
-    socket.on('topCardA', (card) =>
+    socket.on('topCard0', (card) =>
     {
         io.emit('topCardA', card)
     })
 
-    socket.on('topCardB', (card) =>
+    socket.on('topCard1', (card) =>
     {
         io.emit('topCardB', card)
     })
 
-    socket.on('topCardC', (card) =>
+    socket.on('topCard2', (card) =>
     {
         io.emit('topCardC', card)
     })
 
-    socket.on('topCardD', (card) =>
+    socket.on('topCard3', (card) =>
     {
         io.emit('topCardD', card)
     })
@@ -246,16 +253,16 @@ io.on('connection', (socket) =>
                     tableCards.push(gameObject)
                     io.emit('cardPlayedServ', gameObject, activePlayerNum)
                     for (let i = 1; i < players[activePlayerNum].length; i++) {
-                        if (gameObject.cardValue === players[activePlayerNum][i].cardValue && gameObject.cardSuit === players[activePlayerNum][i].cardSuit) {
-                            players[activePlayerNum].splice(i, 1)
+                        if (gameObject.cardValue === players[activePlayerNum].cards[i].cardValue && gameObject.cardSuit === players[activePlayerNum].cards[i].cardSuit) {
+                            players[activePlayerNum].cards.splice(i, 1)
                         }
                     }
                     oldActivePlayerNum = activePlayerNum
                     activePlayerNum = (activePlayerNum+1)%players.length
-                    timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum][0]].emit('active2')}, 1500)
+                    timeout = setTimeout(() => {io.sockets.connected[players[activePlayerNum].id].emit('active2')}, 1500)
                 } else
                 {
-                    io.sockets.connected[players[activePlayerNum][0]].emit('punish2')
+                    io.sockets.connected[players[activePlayerNum].id].emit('punish2')
                     socket.broadcast.emit(`toPunish2`, activePlayerNum);
                 }
             } else
@@ -264,7 +271,7 @@ io.on('connection', (socket) =>
                 {
                     if (tableCards[tableCards.length - 1].cardSuit === 3) 
                     {
-                        io.sockets.connected[players[activePlayerNum][0]].emit('punish2')
+                        io.sockets.connected[players[activePlayerNum].id].emit('punish2')
                         socket.broadcast.emit(`toPunish2`, activePlayerNum);
                     } else
                     {
